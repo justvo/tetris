@@ -7,6 +7,11 @@ const TETROMINOES = {
     'O': [
         [1, 1],
         [1, 1],
+    ],
+    'J': [
+        [1, 0, 0]
+        [1, 1, 1]
+        [1, 0, 0]
     ]
 };
 let playField;
@@ -26,7 +31,7 @@ function generatePlayField() {
 }
 
 function generateTetromino() {
-    const name = TETROMINO_NAMES[0];
+    const name = TETROMINO_NAMES[1];
     const matrix = TETROMINOES[name];
     tetromino = {
         name,
@@ -45,6 +50,7 @@ const cells = document.querySelectorAll('.grid div')
 function drawPlayField() {
     for (let row = 0; row < PLAYFIELD_ROWS; row++) {
         for (let column = 0; column < PLAYFIELD_COLUMS; column++) {
+            if (playField[row][column] == 0) continue;
             drawTetromino();
             drawPlayField();
         }
@@ -58,6 +64,8 @@ function drawTetromino() {
 
     for (let row = 0; row < tetrominoMatrixSize; row++) {
         for (let column = 0; column < tetrominoMatrixSize; column++) {
+            if (!tetromino.matrix[row][column]) continue;
+
             const cellIndex = convertPositionToIndex(
                 tetromino.row + row,
                 tetromino.column + column

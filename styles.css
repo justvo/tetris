@@ -26,7 +26,7 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
   padding: 0.5vh;
   display: grid;
-  grid-template-columns: repeat(11, auto);
+  grid-template-columns: repeat(10, auto);
   gap: 0.5vh;
 }
 .grid > div {

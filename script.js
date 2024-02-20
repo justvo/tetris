@@ -1,6 +1,6 @@
 //const
 
-const PLAY_FIELD_COLUMS = 11;
+const PLAY_FIELD_COLUMS = 10;
 const PLAY_FIELD_ROWS = 20;
 
 const TETROMINO_NAMES = [
@@ -22,16 +22,15 @@ const TETROMINOES = {
         [0, 1, 0],
         [1, 1, 0],
     ],
+    'L': [
+        [0, 1, 0],
+        [0, 1, 0],
+        [0, 1, 1],
+    ],
     'T': [
         [1, 1, 1],
         [0, 1, 0],
         [0, 0, 0],
-    ],
-    'I': [
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
     ],
     'S': [
         [0, 1, 1],
@@ -43,10 +42,11 @@ const TETROMINOES = {
         [0, 1, 1],
         [0, 0, 0],
     ],
-    'L': [
-        [1, 0, 0],
-        [1, 0, 0],
-        [1, 1, 0],
+    'I': [
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
     ],
 };
 
@@ -54,7 +54,7 @@ const TETROMINOES = {
 let playField;
 let tetromino;
 
-
+//random
 const tetraminoItem = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -91,12 +91,6 @@ function generateTetromino() {
     }
 }
 
-
-//////////////////////
-generatePlayField();
-generateTetromino();
-const cells = document.querySelectorAll('.grid div')
-///////////////////////
 
 function drawPlayField() {
     for (let row = 0; row < PLAY_FIELD_ROWS; row++) {
@@ -137,14 +131,6 @@ function draw() {
     drawTetromino();
     drawPlayField();
 }
-/////////////////////
-draw();
-
-document.addEventListener('keydown', onKeyDown);
-///////////////////////
-
-
-
 
 function onKeyDown(e) {
     switch (e.key) {
@@ -161,13 +147,24 @@ function onKeyDown(e) {
     }
     draw();
 }
+
 function moveTetaminaDown() {
     tetromino.row++;
 }
+
 function moveTetaminaLeft() {
     tetromino.column--;
 }
+
 function moveTetaminaRight() {
     tetromino.column++;
 }
 
+// main 
+generatePlayField();
+generateTetromino();
+const cells = document.querySelectorAll('.grid div')
+
+draw();
+
+document.addEventListener('keydown', onKeyDown);

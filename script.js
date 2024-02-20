@@ -1,7 +1,16 @@
-const PLAYFIELD_COLUMS = 10;
-const PLAYFIELD_ROWS = 20;
+//const
+
+const PLAY_FIELD_COLUMS = 11;
+const PLAY_FIELD_ROWS = 20;
+
 const TETROMINO_NAMES = [
-    'O'
+    'O',
+    'J',
+    'T',
+    'I',
+    'S',
+    'Z',
+    'L',
 ]
 const TETROMINOES = {
     'O': [
@@ -9,50 +18,95 @@ const TETROMINOES = {
         [1, 1],
     ],
     'J': [
-        [1, 0, 0]
-        [1, 1, 1]
-        [1, 0, 0]
-    ]
+        [0, 1, 0],
+        [0, 1, 0],
+        [1, 1, 0],
+    ],
+    'T': [
+        [1, 1, 1],
+        [0, 1, 0],
+        [0, 0, 0],
+    ],
+    'I': [
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+    ],
+    'S': [
+        [0, 1, 1],
+        [1, 1, 0],
+        [0, 0, 0],
+    ],
+    'Z': [
+        [1, 1, 0],
+        [0, 1, 1],
+        [0, 0, 0],
+    ],
+    'L': [
+        [1, 0, 0],
+        [1, 0, 0],
+        [1, 1, 0],
+    ],
 };
+
+//var
 let playField;
 let tetromino;
 
-function convertPositionToIndex(row, column) {
-    return row * PLAYFIELD_COLUMS + column
+
+const tetraminoItem = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+
+
+function convertPositionToIndex(row, column) {
+    return row * PLAY_FIELD_COLUMS + column;
+}
+
+
+
 function generatePlayField() {
-    for (let i = 0; i < PLAYFIELD_ROWS * PLAYFIELD_COLUMS; i++) {
+    for (let i = 0; i < PLAY_FIELD_ROWS * PLAY_FIELD_COLUMS; i++) {
         const div = document.createElement('div')
         document.querySelector('.grid').append(div)
     }
-    playField = new Array(PLAYFIELD_ROWS).fill()
-        .map(() => new Array(PLAYFIELD_COLUMS).fill(0))
+    playField = new Array(PLAY_FIELD_ROWS).fill()
+        .map(() => new Array(PLAY_FIELD_COLUMS).fill(0))
 }
 
+
+
 function generateTetromino() {
-    const name = TETROMINO_NAMES[1];
+
+    const name = TETROMINO_NAMES[tetraminoItem(0, TETROMINO_NAMES.length - 1)];
     const matrix = TETROMINOES[name];
+
     tetromino = {
         name,
         matrix,
-        row: 1,
-        column: 3
+        row: 1 ,
+        column: Math.floor((PLAY_FIELD_COLUMS - matrix[0].length) / 2) ,
     }
 }
 
+
+//////////////////////
 generatePlayField();
 generateTetromino();
-
 const cells = document.querySelectorAll('.grid div')
-
+///////////////////////
 
 function drawPlayField() {
-    for (let row = 0; row < PLAYFIELD_ROWS; row++) {
-        for (let column = 0; column < PLAYFIELD_COLUMS; column++) {
-            if (playField[row][column] == 0) continue;
-            drawTetromino();
-            drawPlayField();
+    for (let row = 0; row < PLAY_FIELD_ROWS; row++) {
+        for (let column = 0; column < PLAY_FIELD_COLUMS; column++) {
+            if (playField[row][column] === 0) continue;
+
+            const name = playField[row][column];
+            const cellIndex = convertPositionToIndex(row, column);
+
+            cells[cellIndex].classList.add(name);
         }
     }
 
@@ -70,34 +124,40 @@ function drawTetromino() {
                 tetromino.row + row,
                 tetromino.column + column
             );
-            cells[cellIndex].classList.add(TETROMINO_NAMES)
+            cells[cellIndex].classList.add(name)
+
         }
     }
 
 }
-// drawTetromino();
-// drawPlayField();
+
 
 function draw() {
-    cells.forEach(cell => cell.removeAttribute('class'))
+    cells.forEach(cell => cell.removeAttribute('class'));
+    drawTetromino();
+    drawPlayField();
 }
-// draw();
+/////////////////////
+draw();
 
-document.addEventListener('keydown', onKeyDown)
+document.addEventListener('keydown', onKeyDown);
+///////////////////////
+
+
+
+
 function onKeyDown(e) {
     switch (e.key) {
         case 'ArrowDown':
             moveTetaminaDown();
             break;
-        case 'ArrowDown':
+        case 'ArrowLeft':
             moveTetaminaLeft();
             break;
-        case 'ArrowDown':
+        case 'ArrowRight':
             moveTetaminaRight();
             break;
-        case 'ArrowDown':
-            moveTetaminaDown();
-            break;
+
     }
     draw();
 }
@@ -110,3 +170,4 @@ function moveTetaminaLeft() {
 function moveTetaminaRight() {
     tetromino.column++;
 }
+

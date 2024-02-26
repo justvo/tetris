@@ -1,5 +1,9 @@
-//const
+//!!!The logic of obtaining points has not been created!!!
+// !!! the number changes statically !!!
 
+
+
+//const
 const PLAY_FIELD_COLUMS = 10;
 const PLAY_FIELD_ROWS = 20;
 
@@ -54,6 +58,9 @@ const TETROMINOES = {
 let playField;
 let tetromino;
 
+let scoreValueElement = document.querySelector('.score-value');;
+let score = 100;
+
 //random
 const tetraminoItem = (array) => {
     return array[Math.floor(Math.random() * array.length)];
@@ -82,7 +89,7 @@ function generateTetromino() {
 
     const name = tetraminoItem(TETROMINO_NAMES);
     const matrix = TETROMINOES[name];
-    const column = Math.floor(PLAY_FIELD_COLUMS / 2) - Math.floor(matrix.length / 2);
+    const column = PLAY_FIELD_COLUMS / 2 - Math.floor(matrix.length / 2);
     const rowTetro = -2;
 
 
@@ -90,7 +97,7 @@ function generateTetromino() {
     tetromino = {
         name,
         matrix,
-        row: 0,
+        row: rowTetro,
         column: column,
     }
 }
@@ -104,6 +111,7 @@ function placeTetromino() {
             }
         }
     }
+
     generateTetromino();
 }
 generatePlayField();
@@ -138,7 +146,9 @@ function drawTetromino() {
                 tetromino.row + row,
                 tetromino.column + column
             );
-            cells[cellIndex].classList.add(name)
+            if (cells[cellIndex]) {
+                cells[cellIndex].classList.add(name)
+            }
         }
     }
 
@@ -146,7 +156,11 @@ function drawTetromino() {
 
 
 function draw() {
-    cells.forEach(cell => cell.removeAttribute('class'));
+    cells.forEach(cell => {
+        if (cell) {
+            cell.removeAttribute('class')
+        }
+    });
     drawPlayField();
     drawTetromino();
 }
@@ -245,7 +259,7 @@ function isValid() {
 
 
 function isOutSideOfGameBoard(row, column) {
-    return tetromino.matrix[row][column] && (tetromino.column < 0 ||
+    return tetromino.matrix[row][column] && (tetromino.column + column < 0 ||
         tetromino.column + column >= PLAY_FIELD_COLUMS ||
         tetromino.row + row >= PLAY_FIELD_ROWS)
 }
@@ -255,8 +269,18 @@ function hasCollisions(row, column) {
 
 }
 
-// main 
+function startTimer() {
 
+    timer = setInterval(function () {
+        score += 10;
+        scoreValueElement.textContent = score;
+        moveTetaminaDown();
+        draw();
+    }, 1000);
+}
+
+// main 
+startTimer();
 
 
 

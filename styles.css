@@ -1,62 +1,112 @@
 * {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  background: linear-gradient(180deg,rgb(42, 0, 255) 0%, #5580ff 80%);;
+  background: linear-gradient(180deg, rgb(42, 0, 255) 0%, #5580ff 80%);
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-.title{
-  grid-area: text;
   font-family: 'Sarpanch', sans-serif;
+}
+
+.title {
+  grid-area: text;
   font-size: 10vmin;
   margin-bottom: 10px;
   color: #21aeb8;
   text-shadow: 0.5vmin 0.5vmin 0 #E79C10, -0.5vmin -0.5vmin 0 #D53A33;
-  
 }
 
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .grid {
-  background: rgb(20, 1, 114);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
-  padding: 0.5vh;
+  background: rgba(20, 1, 114, 0.5);
+  border-radius: 10px;
+  padding: 1vh;
   display: grid;
   grid-template-columns: repeat(10, auto);
-  gap: 0.5vh;
+  gap: 1vh;
 }
+
 .grid > div {
   height: min(3vh, 7vh);
   width: min(3vh, 7vh);
-  background-color: rgba(235, 217, 159, 0.2);
   border-radius: 0.3vh;
-
 }
 
 .grid .O {
   background: rgb(252, 255, 64);
-
 }
+
 .grid .J {
   background: rgb(156, 255, 42);
 }
+
 .grid .T {
   background: rgb(174, 0, 255);
 }
+
 .grid .I {
   background: rgb(0, 255, 204);
 }
+
 .grid .S {
   background: rgb(37, 238, 37);
 }
+
 .grid .Z {
   background: rgb(255, 0, 0);
 }
+
 .grid .L {
   background: rgb(255, 133, 19);
 }
 
+.score-container{
+  width: 90%;
+  height: 30%;
+  background-color: rgba(20, 1, 114, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px; 
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); 
+}
+.score {
+  width: 300px;
+  height: 100%;
+  margin-left: 10px;
+  background-color: rgba(20, 1, 114, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.score-title {
+  width: 150px;
+  font-size: 2em;
+  text-align: center;
+  color: rgb(250, 245, 239);
+  background-color: rgba(111, 98, 173, 0.529);
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.score-value {
+  margin-top: 10px;
+  font-size: 1.5em;
+  font-weight: bold;
+  color:rgb(250, 245, 239);
+}

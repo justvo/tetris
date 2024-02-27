@@ -19,10 +19,12 @@
 
 
     <div class="inform">
+      <button id="menu">MENU</button>
 
       <div class="next-tetromino">
-        <h2>Next Tetromino:</h2>
-        <div id="next-tetromino-container"></div>
+        <h3>Next Tetromino</h3>
+        <div class="next-tetromino-grid">
+        </div>
       </div>
 
       <div class="score-container">
@@ -30,11 +32,18 @@
         <div class="score-value">0</div>
       </div>
     </div>
-
-    
   </div>
+
+  <div id="custom-modal" class="modal">
+    <div class="modal-content">
+      <p id="modal-text">Це ваше кастомне вікно!</p>
+      <button id="btn-ok">OK</button>
+      <button id="btn-cancel">Скасувати</button>
+    </div>
+  </div>
+
   <div id="background-container"></div>
-  <script src="script.js"></script>
+  <script  src="script.js"></script>
 </body>
 
 </html>

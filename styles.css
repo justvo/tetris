@@ -128,34 +128,60 @@ body {
 
 .next-tetromino {
   margin-top: 20px;
+  text-align: center;
 }
 
-#next-tetromino-container {
+.next-tetromino h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.next-tetromino-grid {
   display: grid;
-  grid-template-columns: repeat(5, 50px); /* 5 колонок шириною 50px кожна */
-    grid-template-rows: repeat(5, 50px); /* 5 рядків висотою 50px кожен */
-  grid-gap: 5px;
+  grid-template-columns: repeat(5, 20px); /* Розмір клітин */
+  grid-gap: 5px; /* Відступ між клітинами */
 }
 
-#next-tetromino-container div {
-  width: 30px; /* Змініть на необхідний розмір */
-  height: 30px; /* Змініть на необхідний розмір */
-  border: 1px solid #ddd;
+.next-tetromino-cell {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ccc;
 }
 
-#next-tetromino-container .empty {
-  background-color: #f0f0f0;
+
+.next-tetromino-cell.O { background: rgb(252, 255, 64); }
+.next-tetromino-cell.J { background: rgb(156, 255, 42); }
+.next-tetromino-cell.T { background: rgb(174, 0, 255); }
+.next-tetromino-cell.I { background: rgb(0, 255, 204); }
+.next-tetromino-cell.S { background: rgb(37, 238, 37); }
+.next-tetromino-cell.Z { background: rgb(255, 0, 0); }
+.next-tetromino-cell.L { background: rgb(255, 133, 19); }
+
+
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
-/* Стилі для різних фігур */
-#next-tetromino-container .O { background-color: #f90; }
-#next-tetromino-container .J { background-color: #09f; }
-#next-tetromino-container .L { background-color: #f00; }
-#next-tetromino-container .T { background-color: #a0a; }
-#next-tetromino-container .S { background-color: #0f0; }
-#next-tetromino-container .Z { background-color: #f0a; }
-#next-tetromino-container .I { background-color: #0ff; }
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
 
-.empty {
-  background-color: transparent;
+#btn-ok, #btn-cancel {
+  margin-top: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
 }

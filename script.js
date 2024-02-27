@@ -1,5 +1,3 @@
-//!!!The logic of obtaining points has not been created!!!
-// !!! the number changes statically !!!
 
 
 
@@ -57,12 +55,73 @@ const TETROMINOES = {
 //var
 let playField;
 let tetromino;
+let nextTetromino;
 
 let scoreValueElement = document.querySelector('.score-value');;
-let score = 100;
+let score = 0;
+let timerMove;
+let isTimerRunning;
+
+
+//MAIN
+
+generatePlayField();
+const nextTetrominoGrid = document.querySelector('.next-tetromino-grid');
+generateNextTetromino();
+generateTetromino();
+
+const cells = document.querySelectorAll('.grid div')
+
+draw();
+document.addEventListener('keydown', onKeyDown);
+startTimer();
+
+const btnStop = document.getElementById('menu');
+btnStop.addEventListener('click', function () {
+    showCustomModal('JUST STOP')
+})
+
+showCustomModal('Be careful, when switching to another window, the game stops.\nReady to start?');
+
+
+
+
+
+
+function generateNextTetromino() {
+    const name = tetraminoItem(TETROMINO_NAMES);
+    const matrix = TETROMINOES[name];
+
+    nextTetromino = {
+        name,
+        matrix,
+    };
+
+    nextTetrominoGrid.innerHTML = '';
+
+    const tetrominoWidth = matrix[0].length;
+
+    const offsetX = Math.floor((5 - tetrominoWidth) / 2);
+    const offsetY = 2;
+
+    for (let row = 0; row < 4; row++) {
+        for (let column = 0; column < 5; column++) {
+            const cell = document.createElement('div');
+            cell.classList.add('next-tetromino-cell');
+            
+            if (matrix[row] && matrix[row][column - offsetX]) {
+                    cell.classList.add(nextTetromino.name);
+            }
+            
+            nextTetrominoGrid.appendChild(cell);
+        }
+    }
+}
+
+
 
 //random
-const tetraminoItem = (array) => {
+function tetraminoItem(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
@@ -74,6 +133,8 @@ function convertPositionToIndex(row, column) {
 
 
 
+
+///GENERATE FUNCTION
 function generatePlayField() {
     for (let i = 0; i < PLAY_FIELD_ROWS * PLAY_FIELD_COLUMS; i++) {
         const div = document.createElement('div')
@@ -87,10 +148,10 @@ function generatePlayField() {
 
 function generateTetromino() {
 
-    const name = tetraminoItem(TETROMINO_NAMES);
+    const name = (nextTetromino)?nextTetromino.name:tetraminoItem(TETROMINO_NAMES);
     const matrix = TETROMINOES[name];
     const column = PLAY_FIELD_COLUMS / 2 - Math.floor(matrix.length / 2);
-    const rowTetro = -2;
+    const rowTetro = -1;
 
 
 
@@ -100,9 +161,13 @@ function generateTetromino() {
         row: rowTetro,
         column: column,
     }
+
+    generateNextTetromino();
+
 }
 
 function placeTetromino() {
+    
     const matrixSize = tetromino.matrix.length;
     for (let row = 0; row < matrixSize; row++) {
         for (let column = 0; column < matrixSize; column++) {
@@ -111,15 +176,12 @@ function placeTetromino() {
             }
         }
     }
-
+    
     generateTetromino();
 }
-generatePlayField();
-generateTetromino();
-
-const cells = document.querySelectorAll('.grid div')
 
 
+//DRAWSFUNCTION
 function drawPlayField() {
     for (let row = 0; row < PLAY_FIELD_ROWS; row++) {
         for (let column = 0; column < PLAY_FIELD_COLUMS; column++) {
@@ -131,6 +193,7 @@ function drawPlayField() {
             cells[cellIndex].classList.add(name);
         }
     }
+    
 
 }
 
@@ -151,6 +214,7 @@ function drawTetromino() {
             }
         }
     }
+    
 
 }
 
@@ -165,6 +229,8 @@ function draw() {
     drawTetromino();
 }
 
+
+//ROTATE FUNCTIONS
 function rotateTetromino() {
     const oldMatrix = tetromino.matrix;
     const roratedMatrix = rotateMatrix(tetromino.matrix);
@@ -175,7 +241,7 @@ function rotateTetromino() {
 
 }
 
-draw();
+
 
 function rotate() {
     rotateTetromino();
@@ -184,7 +250,7 @@ function rotate() {
 
 
 
-document.addEventListener('keydown', onKeyDown);
+//PRESS KEY FUNCTION
 function onKeyDown(e) {
     switch (e.key) {
         case 'ArrowDown':
@@ -220,6 +286,7 @@ function rotateMatrix(matrixTetromino) {
 function moveTetaminaDown() {
     tetromino.row += 1;
     if (!isValid()) {
+        checkGameOver();
         tetromino.row -= 1;
         placeTetromino();
         removeCompletedRows();
@@ -241,6 +308,9 @@ function moveTetaminaRight() {
 
     }
 }
+
+
+//VALIDATION FUNCTION
 function isValid() {
     const matrixSize = tetromino.matrix.length;
     for (let row = 0; row < matrixSize; row++) {
@@ -259,6 +329,8 @@ function isValid() {
 
 
 
+
+
 function isOutSideOfGameBoard(row, column) {
     return tetromino.matrix[row][column] && (tetromino.column + column < 0 ||
         tetromino.column + column >= PLAY_FIELD_COLUMS ||
@@ -270,23 +342,37 @@ function hasCollisions(row, column) {
 
 }
 
-function startTimer() {
-
-    timer = setInterval(function () {
-
-        scoreValueElement.textContent = score;
-        moveTetaminaDown();
-        draw();
-    }, 1000);
+function checkGameOver() {
+    for (let column = 0; column < PLAY_FIELD_COLUMS; column++) {
+        if (playField[0][column] !== 0) {
+            stopTimer();
+            showCustomModal('GAME OVER');
+        }
+    }
 }
 
-// main 
-startTimer();
+
+//AUTOMOVE TO DOWN
+function startTimer() {
+    if(!isTimerRunning){
+
+        timerMove = setInterval(function () {
+            
+            scoreValueElement.textContent = score;
+            moveTetaminaDown();
+            draw();
+        }, 1000);
+    }
+    isTimerRunning = true;
+}
+
+function stopTimer() {
+    clearInterval(timerMove);
+    isTimerRunning = false;
+}
 
 
-
-
-
+//REMOVE FUNCTIONS
 function removeCompletedRows() {
     let rowsToRemove = [];
     for (let row = PLAY_FIELD_ROWS - 1; row >= 0; row--) {
@@ -298,11 +384,16 @@ function removeCompletedRows() {
     for (let i = 0; i < rowsToRemove.length; i++) {
         const rowToRemove = rowsToRemove[i];
         playField.splice(rowToRemove, 1);
-        playField.unshift(new Array(PLAY_FIELD_COLUMS).fill(0));
-        score += 100;
     }
 
-    scoreValueElement.textContent = score;
+    for (let i = 0; i < rowsToRemove.length; i++) {
+        playField.unshift(new Array(PLAY_FIELD_COLUMS).fill(0));
+    }
+
+    if (rowsToRemove.length > 0) {
+        score += 100 * rowsToRemove.length;
+        scoreValueElement.textContent = score;
+    }
 }
 
 
@@ -314,8 +405,26 @@ function isRowCompleted(row) {
     }
     return true;
 }
+//CUSTOMALERT
+function showCustomModal(message) {
+    stopTimer();
+    const modal = document.getElementById('custom-modal');
+    const textContant = document.getElementById('modal-text')
+    textContant.textContent = message;
+    modal.style.display = 'block';
 
+    const btnOK = document.getElementById('btn-ok');
+    const btnCancel = document.getElementById('btn-cancel');
 
+    btnOK.addEventListener('click', function () {
+        startTimer();
+        modal.style.display = 'none';
+    });
+
+    btnCancel.addEventListener('click', function () {
+        modal.style.display = 'none';
+    });
+}
 
 
 
@@ -324,23 +433,23 @@ function isRowCompleted(row) {
 //bacground animation
 document.addEventListener('DOMContentLoaded', function () {
     const backgroundContainer = document.getElementById('background-container');
+    let intervalId;
 
     function createFallingSquare() {
-            const square = document.createElement('div');
-            square.className = 'falling-square';
+        const square = document.createElement('div');
+        square.className = 'falling-square';
 
-            const size = Math.floor(Math.random() * 30) + 10;
-            square.style.width = `${size}px`;
-            square.style.height = `${size}px`;
+        const size = Math.floor(Math.random() * 30) + 10;
+        square.style.width = `${size}px`;
+        square.style.height = `${size}px`;
 
-            const color = getRandomColor();
-            square.style.backgroundColor = color;
+        const color = getRandomColor();
+        square.style.backgroundColor = color;
 
-            square.style.left = `${Math.random() * 100}vw`;
-            backgroundContainer.appendChild(square);
+        square.style.left = `${Math.random() * 100}vw`;
+        backgroundContainer.appendChild(square);
 
-            animateFallingSquare(square);
-        
+        animateFallingSquare(square);
     }
 
     function animateFallingSquare(square) {
@@ -361,7 +470,27 @@ document.addEventListener('DOMContentLoaded', function () {
         moveSquare();
     }
 
-    setInterval(createFallingSquare, 60);
+    // Add an event handler for losing focus
+    window.addEventListener('blur', function () {
+        // stop all animation
+        clearInterval(intervalId);
+        stopTimer()
+    });
+
+    // when going to the game page 
+    window.addEventListener('focus', function () {
+
+        // StartbacgroundAnimation
+        intervalId = setInterval(createFallingSquare, 60);
+        //start Move tetraminoe
+        console.log('eroror')
+        startTimer();
+
+    });
+
+    //StartbacgroundAnimation
+    intervalId = setInterval(createFallingSquare, 60);
+
 });
 
 function getRandomColor() {
@@ -372,6 +501,9 @@ function getRandomColor() {
     }
     return color;
 }
+
+
+
 
 
 

@@ -76,9 +76,21 @@ draw();
 document.addEventListener('keydown', onKeyDown);
 startTimer();
 
-const btnStop = document.getElementById('menu');
-btnStop.addEventListener('click', function () {
-    showCustomModal('JUST STOP')
+const btnInfo = document.getElementById('btnInfo');
+const btnStart = document.getElementById('btnStart');
+const btnStop = document.getElementById('btnStop');
+const btnReset = document.getElementById('btnReset');
+
+btnInfo.addEventListener('click', function () {
+    showCustomModal('Control is with the right, left and down arrows, turn by pressing the up arrow')
+})
+btnReset.addEventListener('click', function () {
+    resetPlayField();
+    generateNextTetromino();
+    generateTetromino();
+    score = 0;
+    showCustomModal('the game was restarted')
+
 })
 
 showCustomModal('Be careful, when switching to another window, the game stops.\nReady to start?');
@@ -99,20 +111,18 @@ function generateNextTetromino() {
 
     nextTetrominoGrid.innerHTML = '';
 
-    const tetrominoWidth = matrix[0].length;
 
-    const offsetX = Math.floor((5 - tetrominoWidth) / 2);
-    const offsetY = 2;
+
+    ;
 
     for (let row = 0; row < 4; row++) {
-        for (let column = 0; column < 5; column++) {
+        for (let column = 0; column < 4; column++) {
             const cell = document.createElement('div');
             cell.classList.add('next-tetromino-cell');
-            
-            if (matrix[row] && matrix[row][column - offsetX]) {
-                    cell.classList.add(nextTetromino.name);
+            if (matrix[row] && matrix[row][column]) {
+                cell.classList.add(nextTetromino.name);
             }
-            
+
             nextTetrominoGrid.appendChild(cell);
         }
     }
@@ -148,7 +158,7 @@ function generatePlayField() {
 
 function generateTetromino() {
 
-    const name = (nextTetromino)?nextTetromino.name:tetraminoItem(TETROMINO_NAMES);
+    const name = (nextTetromino && nextTetromino.name) ? nextTetromino.name : tetraminoItem(TETROMINO_NAMES);
     const matrix = TETROMINOES[name];
     const column = PLAY_FIELD_COLUMS / 2 - Math.floor(matrix.length / 2);
     const rowTetro = -1;
@@ -167,7 +177,7 @@ function generateTetromino() {
 }
 
 function placeTetromino() {
-    
+
     const matrixSize = tetromino.matrix.length;
     for (let row = 0; row < matrixSize; row++) {
         for (let column = 0; column < matrixSize; column++) {
@@ -176,7 +186,6 @@ function placeTetromino() {
             }
         }
     }
-    
     generateTetromino();
 }
 
@@ -193,7 +202,7 @@ function drawPlayField() {
             cells[cellIndex].classList.add(name);
         }
     }
-    
+
 
 }
 
@@ -214,7 +223,7 @@ function drawTetromino() {
             }
         }
     }
-    
+
 
 }
 
@@ -291,6 +300,8 @@ function moveTetaminaDown() {
         placeTetromino();
         removeCompletedRows();
     }
+    draw();
+
 }
 
 function moveTetaminaLeft() {
@@ -316,6 +327,7 @@ function isValid() {
     for (let row = 0; row < matrixSize; row++) {
         for (let column = 0; column < matrixSize; column++) {
             if (isOutSideOfGameBoard(row, column)) {
+
                 return false;
             }
             if (hasCollisions(row, column)) {
@@ -332,6 +344,7 @@ function isValid() {
 
 
 function isOutSideOfGameBoard(row, column) {
+    console.log
     return tetromino.matrix[row][column] && (tetromino.column + column < 0 ||
         tetromino.column + column >= PLAY_FIELD_COLUMS ||
         tetromino.row + row >= PLAY_FIELD_ROWS)
@@ -343,25 +356,26 @@ function hasCollisions(row, column) {
 }
 
 function checkGameOver() {
+    console.log("check");
     for (let column = 0; column < PLAY_FIELD_COLUMS; column++) {
-        if (playField[0][column] !== 0) {
+        if (playField[1][column] !== 0) {
+            console.log("check success");
             stopTimer();
-            showCustomModal('GAME OVER');
+            showCustomModal('GAME OVER \nDo you want ro restart?');
+            break;
         }
     }
 }
 
 
+
 //AUTOMOVE TO DOWN
 function startTimer() {
-    if(!isTimerRunning){
+    if (!isTimerRunning) {
 
         timerMove = setInterval(function () {
-            
-            scoreValueElement.textContent = score;
             moveTetaminaDown();
-            draw();
-        }, 1000);
+        }, 500);
     }
     isTimerRunning = true;
 }
@@ -392,7 +406,8 @@ function removeCompletedRows() {
 
     if (rowsToRemove.length > 0) {
         score += 100 * rowsToRemove.length;
-        scoreValueElement.textContent = score;
+        scoreValueElement.textContent = `0000${score}`.slice(-6);;
+
     }
 }
 
@@ -405,6 +420,9 @@ function isRowCompleted(row) {
     }
     return true;
 }
+
+
+
 //CUSTOMALERT
 function showCustomModal(message) {
     stopTimer();
@@ -425,7 +443,6 @@ function showCustomModal(message) {
         modal.style.display = 'none';
     });
 }
-
 
 
 
@@ -502,7 +519,11 @@ function getRandomColor() {
     return color;
 }
 
-
+function resetPlayField() {
+    playField = new Array(PLAY_FIELD_ROWS).fill()
+        .map(() => new Array(PLAY_FIELD_COLUMS).fill(0));
+    draw();
+}
 
 
 

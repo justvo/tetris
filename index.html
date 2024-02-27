@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
   <title>Document</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -19,7 +20,12 @@
 
 
     <div class="inform">
-      <button id="menu">MENU</button>
+      <div class="buttons-container">
+        <button id="btnStart" class="styled-button">Start</button>
+        <button id="btnStop" class="styled-button">Stop</button>
+        <button id="btnReset" class="styled-button">Reset</button>
+        <button id="btnInfo" class="styled-button">Info</button>
+      </div>
 
       <div class="next-tetromino">
         <h3>Next Tetromino</h3>
@@ -29,21 +35,23 @@
 
       <div class="score-container">
         <div class="score-title ">Score</div>
-        <div class="score-value">0</div>
+        <div class="score-value">000000</div>
       </div>
     </div>
   </div>
 
   <div id="custom-modal" class="modal">
     <div class="modal-content">
-      <p id="modal-text">Це ваше кастомне вікно!</p>
-      <button id="btn-ok">OK</button>
-      <button id="btn-cancel">Скасувати</button>
+      <p id="modal-text"></p>
+      <div class="buttons">
+        <button id="btn-ok">Confirm</button>
+        <button id="btn-cancel">Cancel</button>
+      </div>
     </div>
   </div>
 
   <div id="background-container"></div>
-  <script  src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>

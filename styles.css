@@ -15,6 +15,7 @@ body {
 }
 
 .title {
+  font-family: 'Press Start 2P', cursive;
   grid-area: text;
   font-size: 10vmin;
   margin-bottom: 10px;
@@ -37,7 +38,7 @@ body {
   gap: 1vh;
 }
 
-.grid > div {
+.grid>div {
   height: min(3vh, 7vh);
   width: min(3vh, 7vh);
   border-radius: 0.3vh;
@@ -70,18 +71,6 @@ body {
 .grid .L {
   background: rgb(255, 133, 19);
 }
-
-.score-container{
-  width: 90%;
-  height: 30%;
-  background-color: rgba(20, 1, 114, 0.5);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 15px; 
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); 
-}
 .inform {
   width: 300px;
   height: 100%;
@@ -90,8 +79,54 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   border-radius: 10px;
+}
+.buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 90%;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.styled-button {
+  flex-basis: calc(50% - 5px); /* 50% ширина з врахуванням проміжку */
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1em;
+  color: white;
+  background-color: rgba(20, 1, 114, 0.8);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.styled-button:hover {
+  background-color: rgba(20, 1, 114, 1);
+}
+
+.score-container {
+  width: 90%;
+  height: 30%;
+  background-color: rgba(20, 1, 114, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  margin-top: 20px; 
+}
+
+
+.score-title, .score-value {
+  font-family: 'Press Start 2P', cursive;
+  color: white;
+  margin: 10px 0 10px 0;
+
 }
 
 .score-title {
@@ -99,7 +134,6 @@ body {
   font-size: 2em;
   text-align: center;
   color: rgb(250, 245, 239);
-  background-color: rgba(111, 98, 173, 0.529);
   border-radius: 10px;
   font-weight: bold;
 }
@@ -108,7 +142,6 @@ body {
   margin-top: 10px;
   font-size: 1.5em;
   font-weight: bold;
-  color:rgb(250, 245, 239);
 }
 
 #background-container {
@@ -118,44 +151,73 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: -1; 
+  z-index: -1;
 }
 
 .falling-square {
   position: absolute;
-  opacity: 0.8; /* Налаштування прозорості, якщо потрібно */
+  opacity: 0.8;
 }
 
 .next-tetromino {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   margin-top: 20px;
-  text-align: center;
 }
 
 .next-tetromino h3 {
+  font-family: 'Press Start 2P', cursive;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   font-size: 18px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .next-tetromino-grid {
   display: grid;
-  grid-template-columns: repeat(5, 20px); /* Розмір клітин */
-  grid-gap: 5px; /* Відступ між клітинами */
+  grid-template-columns: repeat(4, 30px);
+  grid-gap: 5px;
+  margin: 0 auto;
 }
 
 .next-tetromino-cell {
-  width: 20px;
-  height: 20px;
-  border: 1px solid #ccc;
+  width: 30px;
+  height: 30px;
+  box-sizing: border-box;
+
 }
 
 
-.next-tetromino-cell.O { background: rgb(252, 255, 64); }
-.next-tetromino-cell.J { background: rgb(156, 255, 42); }
-.next-tetromino-cell.T { background: rgb(174, 0, 255); }
-.next-tetromino-cell.I { background: rgb(0, 255, 204); }
-.next-tetromino-cell.S { background: rgb(37, 238, 37); }
-.next-tetromino-cell.Z { background: rgb(255, 0, 0); }
-.next-tetromino-cell.L { background: rgb(255, 133, 19); }
+
+.next-tetromino-cell.O {
+  background: rgb(252, 255, 64);
+}
+
+.next-tetromino-cell.J {
+  background: rgb(156, 255, 42);
+}
+
+.next-tetromino-cell.T {
+  background: rgb(174, 0, 255);
+}
+
+.next-tetromino-cell.I {
+  background: rgb(0, 255, 204);
+}
+
+.next-tetromino-cell.S {
+  background: rgb(37, 238, 37);
+}
+
+.next-tetromino-cell.Z {
+  background: rgb(255, 0, 0);
+}
+
+.next-tetromino-cell.L {
+  background: rgb(255, 133, 19);
+}
 
 
 
@@ -174,14 +236,32 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #fff;
+  background: rgba(114, 1, 108, 0.856);
+  line-height: 1.5;
+  color: white;
   padding: 20px;
   border-radius: 5px;
+  font-family: 'Press Start 2P';
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
+
 }
 
 #btn-ok, #btn-cancel {
   margin-top: 10px;
-  padding: 5px 10px;
+  padding: 10px 20px;
   cursor: pointer;
+  background-color: #c455ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-family: 'Press Start 2P';
+  font-size: 16px;
+}
+
+#btn-ok:hover, #btn-cancel:hover {
+  background-color: #3658a7;
 }

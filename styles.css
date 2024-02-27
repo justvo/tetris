@@ -82,7 +82,7 @@ body {
   border-radius: 15px; 
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); 
 }
-.score {
+.inform {
   width: 300px;
   height: 100%;
   margin-left: 10px;
@@ -109,4 +109,53 @@ body {
   font-size: 1.5em;
   font-weight: bold;
   color:rgb(250, 245, 239);
+}
+
+#background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1; 
+}
+
+.falling-square {
+  position: absolute;
+  opacity: 0.8; /* Налаштування прозорості, якщо потрібно */
+}
+
+.next-tetromino {
+  margin-top: 20px;
+}
+
+#next-tetromino-container {
+  display: grid;
+  grid-template-columns: repeat(5, 50px); /* 5 колонок шириною 50px кожна */
+    grid-template-rows: repeat(5, 50px); /* 5 рядків висотою 50px кожен */
+  grid-gap: 5px;
+}
+
+#next-tetromino-container div {
+  width: 30px; /* Змініть на необхідний розмір */
+  height: 30px; /* Змініть на необхідний розмір */
+  border: 1px solid #ddd;
+}
+
+#next-tetromino-container .empty {
+  background-color: #f0f0f0;
+}
+
+/* Стилі для різних фігур */
+#next-tetromino-container .O { background-color: #f90; }
+#next-tetromino-container .J { background-color: #09f; }
+#next-tetromino-container .L { background-color: #f00; }
+#next-tetromino-container .T { background-color: #a0a; }
+#next-tetromino-container .S { background-color: #0f0; }
+#next-tetromino-container .Z { background-color: #f0a; }
+#next-tetromino-container .I { background-color: #0ff; }
+
+.empty {
+  background-color: transparent;
 }

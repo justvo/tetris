@@ -222,6 +222,7 @@ function moveTetaminaDown() {
     if (!isValid()) {
         tetromino.row -= 1;
         placeTetromino();
+        removeCompletedRows();
     }
 }
 
@@ -272,7 +273,7 @@ function hasCollisions(row, column) {
 function startTimer() {
 
     timer = setInterval(function () {
-        score += 10;
+
         scoreValueElement.textContent = score;
         moveTetaminaDown();
         draw();
@@ -282,6 +283,95 @@ function startTimer() {
 // main 
 startTimer();
 
+
+
+
+
+function removeCompletedRows() {
+    let rowsToRemove = [];
+    for (let row = PLAY_FIELD_ROWS - 1; row >= 0; row--) {
+        if (isRowCompleted(row)) {
+            rowsToRemove.push(row);
+        }
+    }
+
+    for (let i = 0; i < rowsToRemove.length; i++) {
+        const rowToRemove = rowsToRemove[i];
+        playField.splice(rowToRemove, 1);
+        playField.unshift(new Array(PLAY_FIELD_COLUMS).fill(0));
+        score += 100;
+    }
+
+    scoreValueElement.textContent = score;
+}
+
+
+function isRowCompleted(row) {
+    for (let column = 0; column < PLAY_FIELD_COLUMS; column++) {
+        if (playField[row][column] === 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+
+
+
+
+
+//bacground animation
+document.addEventListener('DOMContentLoaded', function () {
+    const backgroundContainer = document.getElementById('background-container');
+
+    function createFallingSquare() {
+            const square = document.createElement('div');
+            square.className = 'falling-square';
+
+            const size = Math.floor(Math.random() * 30) + 10;
+            square.style.width = `${size}px`;
+            square.style.height = `${size}px`;
+
+            const color = getRandomColor();
+            square.style.backgroundColor = color;
+
+            square.style.left = `${Math.random() * 100}vw`;
+            backgroundContainer.appendChild(square);
+
+            animateFallingSquare(square);
+        
+    }
+
+    function animateFallingSquare(square) {
+        let positionY = 0;
+        const speed = 1;
+
+        function moveSquare() {
+            positionY += speed;
+            square.style.top = `${positionY}vh`;
+
+            if (positionY < 100) {
+                requestAnimationFrame(moveSquare);
+            } else {
+                square.remove();
+            }
+        }
+
+        moveSquare();
+    }
+
+    setInterval(createFallingSquare, 60);
+});
+
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
 
 
 

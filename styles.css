@@ -11,16 +11,16 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-family: 'Sarpanch', sans-serif;
+  font-family: "Sarpanch", sans-serif;
 }
 
 .title {
-  font-family: 'Press Start 2P', cursive;
+  font-family: "Press Start 2P", cursive;
   grid-area: text;
   font-size: 10vmin;
   margin-bottom: 10px;
   color: #21aeb8;
-  text-shadow: 0.5vmin 0.5vmin 0 #E79C10, -0.5vmin -0.5vmin 0 #D53A33;
+  text-shadow: 0.5vmin 0.5vmin 0 #e79c10, -0.5vmin -0.5vmin 0 #d53a33;
 }
 
 .content {
@@ -38,7 +38,7 @@ body {
   gap: 1vh;
 }
 
-.grid>div {
+.grid > div {
   height: min(3vh, 7vh);
   width: min(3vh, 7vh);
   border-radius: 0.3vh;
@@ -92,9 +92,9 @@ body {
 }
 
 .styled-button {
-  flex-basis: calc(50% - 5px); /* 50% ширина з врахуванням проміжку */
+  flex-basis: calc(50% - 5px);
   padding: 10px 20px;
-  font-family: 'Press Start 2P', cursive;
+  font-family: "Press Start 2P", cursive;
   font-size: 1em;
   color: white;
   background-color: rgba(20, 1, 114, 0.8);
@@ -118,15 +118,14 @@ body {
   justify-content: center;
   border-radius: 15px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-  margin-top: 20px; 
+  margin-top: 20px;
 }
 
-
-.score-title, .score-value {
-  font-family: 'Press Start 2P', cursive;
+.score-title,
+.score-value {
+  font-family: "Press Start 2P", cursive;
   color: white;
   margin: 10px 0 10px 0;
-
 }
 
 .score-title {
@@ -168,7 +167,7 @@ body {
 }
 
 .next-tetromino h3 {
-  font-family: 'Press Start 2P', cursive;
+  font-family: "Press Start 2P", cursive;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   font-size: 18px;
@@ -181,15 +180,15 @@ body {
   grid-gap: 5px;
   margin: 0 auto;
 }
+.next-tetromino-grid > div {
+  border-radius: 0.3vh;
+}
 
 .next-tetromino-cell {
   width: 30px;
   height: 30px;
   box-sizing: border-box;
-
 }
-
-
 
 .next-tetromino-cell.O {
   background: rgb(252, 255, 64);
@@ -219,8 +218,6 @@ body {
   background: rgb(255, 133, 19);
 }
 
-
-
 .modal {
   display: none;
   position: fixed;
@@ -241,27 +238,34 @@ body {
   color: white;
   padding: 20px;
   border-radius: 5px;
-  font-family: 'Press Start 2P';
+  font-family: "Press Start 2P";
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-
+}
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
 }
 
-#btn-ok, #btn-cancel {
-  margin-top: 10px;
+#btn-ok,
+#btn-cancel {
   padding: 10px 20px;
   cursor: pointer;
   background-color: #c455ff;
   color: white;
   border: none;
   border-radius: 5px;
-  font-family: 'Press Start 2P';
+  font-family: "Press Start 2P";
   font-size: 16px;
+  flex-grow: 1;
+  margin: 0 5px;
 }
 
-#btn-ok:hover, #btn-cancel:hover {
+#btn-ok:hover,
+#btn-cancel:hover {
   background-color: #3658a7;
 }

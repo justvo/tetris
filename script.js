@@ -1,7 +1,4 @@
 
-
-
-//const
 const PLAY_FIELD_COLUMS = 10;
 const PLAY_FIELD_ROWS = 20;
 
@@ -59,8 +56,10 @@ let nextTetromino;
 
 let scoreValueElement = document.querySelector('.score-value');;
 let score = 0;
-let timerMove;
+
 let isTimerRunning;
+let lastTime = 0;
+
 
 
 //MAIN
@@ -82,18 +81,21 @@ const btnStop = document.getElementById('btnStop');
 const btnReset = document.getElementById('btnReset');
 
 btnInfo.addEventListener('click', function () {
-    showCustomModal('Control is with the right, left and down arrows, turn by pressing the up arrow')
+    showCustomModal('Control is with the right, left and down arrows, turn by pressing the up arrow', '', 'Continue')
+})
+btnStart.addEventListener('click', function () {
+    startTimer();
+})
+btnStop.addEventListener('click', function () {
+    stopTimer();
 })
 btnReset.addEventListener('click', function () {
-    resetPlayField();
-    generateNextTetromino();
-    generateTetromino();
-    score = 0;
-    showCustomModal('the game was restarted')
+
+    showCustomModal('Are you sure?', 'Really want to restart?', 'No, contunue', 'Restart');
 
 })
 
-showCustomModal('Be careful, when switching to another window, the game stops.\nReady to start?');
+showCustomModal('Be careful, when switching to another window, the game stops', 'Ready to start?', 'Start');
 
 
 
@@ -356,12 +358,10 @@ function hasCollisions(row, column) {
 }
 
 function checkGameOver() {
-    console.log("check");
     for (let column = 0; column < PLAY_FIELD_COLUMS; column++) {
         if (playField[1][column] !== 0) {
-            console.log("check success");
             stopTimer();
-            showCustomModal('GAME OVER \nDo you want ro restart?');
+            showCustomModal('GAME OVER', 'Do you want to restart?', 'Restart');
             break;
         }
     }
@@ -370,20 +370,39 @@ function checkGameOver() {
 
 
 //AUTOMOVE TO DOWN
+
+function timerCallback(currentTime) {
+    if (!isTimerRunning) {
+        return;
+    }
+
+    // Calculate the elapsed time since the last frame
+    const deltaTime = currentTime - lastTime;
+
+    // If enough time has passed, move the tetramino down and increase the score
+    if (deltaTime >= Math.max(50, (1000 - score * 0.01))) {
+        moveTetaminaDown();
+        lastTime = currentTime;
+    }
+
+    // Request the next frame
+    timerMove = requestAnimationFrame(timerCallback);
+}
+
 function startTimer() {
     if (!isTimerRunning) {
-
-        timerMove = setInterval(function () {
-            moveTetaminaDown();
-        }, 500);
+        isTimerRunning = true;
+        timerMove = requestAnimationFrame(timerCallback);
     }
-    isTimerRunning = true;
 }
 
 function stopTimer() {
-    clearInterval(timerMove);
-    isTimerRunning = false;
+    if (isTimerRunning) {
+        cancelAnimationFrame(timerMove);
+        isTimerRunning = false;
+    }
 }
+
 
 
 //REMOVE FUNCTIONS
@@ -406,7 +425,7 @@ function removeCompletedRows() {
 
     if (rowsToRemove.length > 0) {
         score += 100 * rowsToRemove.length;
-        scoreValueElement.textContent = `0000${score}`.slice(-6);;
+        scoreValueElement.textContent = `0000${score}`.slice(-6);
 
     }
 }
@@ -424,24 +443,54 @@ function isRowCompleted(row) {
 
 
 //CUSTOMALERT
-function showCustomModal(message) {
+function showCustomModal(messageTitle, messageText, confirm, cancel) {
     stopTimer();
     const modal = document.getElementById('custom-modal');
+
+    const titleContant = document.getElementById('modal-title')
     const textContant = document.getElementById('modal-text')
-    textContant.textContent = message;
+
+    titleContant.textContent = messageTitle;
+    textContant.textContent = messageText;
+
     modal.style.display = 'block';
 
+
     const btnOK = document.getElementById('btn-ok');
+    btnOK.textContent = confirm
+
     const btnCancel = document.getElementById('btn-cancel');
+    if (!cancel) {
+        btnCancel.style.display = 'none'
+    } else {
+        btnCancel.style.display = 'block'
+
+    }
+    btnCancel.textContent = cancel;
+
+    btnCancel.addEventListener('click', function () {
+
+        if (cancel == 'Restart') {
+            resetPlayField();
+        };
+
+        modal.style.display = 'none';
+        startTimer();
+
+    });
+
+
 
     btnOK.addEventListener('click', function () {
+        if (confirm == 'Restart') {
+            resetPlayField();
+        };
         startTimer();
         modal.style.display = 'none';
     });
 
-    btnCancel.addEventListener('click', function () {
-        modal.style.display = 'none';
-    });
+    // confirm = '';
+    // cancel = '';
 }
 
 
@@ -490,6 +539,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Add an event handler for losing focus
     window.addEventListener('blur', function () {
         // stop all animation
+        showCustomModal("Pause", '', 'Continue', 'Restart');
         clearInterval(intervalId);
         stopTimer()
     });
@@ -500,8 +550,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // StartbacgroundAnimation
         intervalId = setInterval(createFallingSquare, 60);
         //start Move tetraminoe
-        console.log('eroror')
-        startTimer();
+        // startTimer();
 
     });
 
@@ -520,11 +569,12 @@ function getRandomColor() {
 }
 
 function resetPlayField() {
+    generateNextTetromino();
+    generateTetromino();
     playField = new Array(PLAY_FIELD_ROWS).fill()
         .map(() => new Array(PLAY_FIELD_COLUMS).fill(0));
     draw();
+    score = 0;
+    scoreValueElement.textContent = `0000${score}`.slice(-6);
+    showCustomModal('The game was restarted');
 }
-
-
-
-

@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    />
     <title>Document</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -20,35 +21,26 @@
       </div>
 
       <div class="inform">
-        <div class="buttons-container">
+        <div class="buttons-container inform-item">
           <button id="btnStart" class="styled-button">Start</button>
           <button id="btnStop" class="styled-button">Stop</button>
           <button id="btnReset" class="styled-button">Reset</button>
           <button id="btnInfo" class="styled-button">Info</button>
         </div>
 
-        <div class="next-tetromino">
-          <h3>Next Tetromino</h3>
-          <div class="next-tetromino-grid"></div>
-        </div>
+        <div class="game-info">
+          <div class="next-tetromino inform-item">
+            <h3>Next Tetromino</h3>
+            <div class="next-tetromino-grid"></div>
+          </div>
 
-        <div class="score-container">
-          <div class="score-title">Score</div>
-          <div class="score-value">000000</div>
+          <div class="score-container inform-item">
+            <div class="score-title">Score</div>
+            <div class="score-value">000000</div>
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- <div id="custom-modal" class="modal">
-      <div class="modal-content">
-        <p class="modal-title"></p>
-        <p class="modal-text"></p>
-        <div class="buttons">
-          <button class="btn-ok">Confirm</button>
-          <button class="btn-cancel">Cancel</button>
-        </div>
-      </div>
-    </div> -->
 
     <div id="background-container"></div>
     <script src="script.js"></script>

@@ -529,7 +529,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add an event handler for losing focus
   window.addEventListener("blur", function () {
     // stop all animation
-    // showCustomModal("Pause", '', 'Continue', 'Restart');
+    showCustomModal("Pause", '', 'Continue', 'Restart');
     clearInterval(intervalId);
     stopTimer();
   });
@@ -538,8 +538,6 @@ document.addEventListener("DOMContentLoaded", function () {
   window.addEventListener("focus", function () {
     // StartbacgroundAnimation
     intervalId = setInterval(createFallingSquare, 60);
-    //start Move tetraminoe
-    // startTimer();
   });
 
   //StartbacgroundAnimation
@@ -559,7 +557,7 @@ function setInitialWindowSize() {
   initialWindowWidth = window.innerWidth;
   initialWindowHeight = window.innerHeight;
 
-  if (initialWindowWidth < 600) {
+  if (initialWindowWidth < 700) {
     addButton();
   } else {
     removeButton();

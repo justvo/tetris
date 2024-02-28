@@ -82,7 +82,7 @@ body {
 .inform {
   width: 300px;
   height: 100%;
-  margin-left: 10px;
+  margin-left: 5px;
   background-color: rgba(20, 1, 114, 0.5);
   display: flex;
   flex-direction: column;
@@ -296,7 +296,7 @@ body {
     justify-content: flex-start;
   }
   .title {
-    margin-top: 20px;
+    margin-top: 10px;
   }
 
   .grid {
@@ -344,7 +344,7 @@ body {
   }
   .inform-item {
     width: calc(50% - 10px);
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     box-sizing: border-box;
   }
 
@@ -384,7 +384,7 @@ body {
     border-radius: 5px;
     color: white;
     cursor: pointer;
-    margin: 5px; /* Внутрішні відступи між кнопками */
+    margin: 2px; /* Внутрішні відступи між кнопками */
   }
 
   /* Стилі для наведення курсора на кнопки */

@@ -2,6 +2,7 @@ const PLAY_FIELD_COLUMS = 10;
 const PLAY_FIELD_ROWS = 20;
 
 const TETROMINO_NAMES = ["O", "J", "T", "I", "S", "Z", "L"];
+let COPY_CTETROMINO_NAMES = ["O", "J", "T", "I", "S", "Z", "L"];
 const TETROMINOES = {
   O: [
     [1, 1],
@@ -51,13 +52,13 @@ let score = 0;
 let isTimerRunning;
 let lastTime = 0;
 
-
 let touchStartX = 0;
 let touchEndX = 0;
 
 let touchStartY = 0;
 let touchEndY = 0;
 let isMobile;
+let isTetrominoDown;
 
 //MAIN
 
@@ -79,20 +80,23 @@ const btnReset = document.getElementById("btnReset");
 
 btnInfo.addEventListener("click", function () {
   showCustomModal(
-    "Control is with the ←, → and ↓ , turn by pressing the ↑ key/buttons ",
+    "Control is with the ←, → and ↓ , turn by pressing the ↑ key/buttons, also use ⇓ for for a quick drop ",
     "When using from the phone, swipes are available. \nTo reload the page, make a long swipe",
     "Continue"
   );
 });
+
 btnStart.addEventListener("click", function () {
   startTimer();
 });
+
 btnStop.addEventListener("click", function () {
   let chitmessage =
     "This button is a cheat whether you choose to use it or not, it stops the tetromin from falling automatically. Do you agree to use it? (to turn off, press the 'Start' button)";
   showCustomModal(chitmessage, "", "No, continue", "Yes, cheaters are cool!!");
   stopTimer();
 });
+
 btnReset.addEventListener("click", function () {
   showCustomModal(
     "Are you sure?",
@@ -109,54 +113,49 @@ showCustomModal(
 );
 
 
-
-
-
-document.addEventListener('touchstart', function (event) {
-    touchStartX = event.touches[0].clientX;
-    touchStartY = event.touches[0].clientY
+document.addEventListener("touchstart", function (event) {
+  touchStartX = event.touches[0].clientX;
+  touchStartY = event.touches[0].clientY;
 });
 
-document.addEventListener('touchend', function (event) {
-    touchEndX = event.changedTouches[0].clientX;
-    touchEndY = event.changedTouches[0].clientY;
-    handleSwipe();
+document.addEventListener("touchend", function (event) {
+  touchEndX = event.changedTouches[0].clientX;
+  touchEndY = event.changedTouches[0].clientY;
+  handleSwipe();
 });
 
 function handleSwipe() {
-    const threshold = 50; 
-    const reloadSwipe = 500;
+  const threshold = 50;
+  const reloadSwipe = 500;
 
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = touchEndY - touchStartY;
 
-
-    if (Math.abs(deltaX) > threshold) {
-        if (deltaX > 0) {
-            moveTetaminaRight();
-        } else {
-            moveTetaminaLeft();
-        }
-        draw();
+  if (Math.abs(deltaX) > threshold) {
+    if (deltaX > 0) {
+      moveTetaminaRight();
+    } else {
+      moveTetaminaLeft();
     }
-    if (Math.abs(deltaY) > threshold) {
-        if (deltaY < 0) {
-            rotate();
-        } else {
-            moveTetaminaDown();
-        }
-        draw();
+    draw();
+  }
+  if (Math.abs(deltaY) > threshold) {
+    if (deltaY < 0) {
+      rotate();
+    } else {
+      moveTetaminaDown();
     }
-    if(Math.abs(deltaY) > reloadSwipe){
-        location.reload();
-
-    }
+    draw();
+  }
+  if (Math.abs(deltaY) > reloadSwipe) {
+    location.reload();
+  }
 }
 ///////////////and main
 
 //generate tetromino
 function generateNextTetromino() {
-  const name = tetraminoItem(TETROMINO_NAMES);
+  const name = tetraminoItem();
   const matrix = TETROMINOES[name];
 
   nextTetromino = {
@@ -180,8 +179,14 @@ function generateNextTetromino() {
 }
 
 //random
-function tetraminoItem(array) {
-  return array[Math.floor(Math.random() * array.length)];
+function tetraminoItem() {
+    const randomIndex = Math.floor(Math.random() * COPY_CTETROMINO_NAMES.length);
+    const randomElement = COPY_CTETROMINO_NAMES.splice(randomIndex, 1)[0];
+    if(COPY_CTETROMINO_NAMES.length<1){
+        COPY_CTETROMINO_NAMES = [...TETROMINO_NAMES]
+    }
+    return randomElement;
+
 }
 
 function convertPositionToIndex(row, column) {
@@ -203,7 +208,8 @@ function generateTetromino() {
   const name =
     nextTetromino && nextTetromino.name
       ? nextTetromino.name
-      : tetraminoItem(TETROMINO_NAMES);
+      : tetraminoItem();
+
   const matrix = TETROMINOES[name];
   const column = PLAY_FIELD_COLUMS / 2 - Math.floor(matrix.length / 2);
   const rowTetro = -1;
@@ -228,6 +234,7 @@ function placeTetromino() {
       }
     }
   }
+  isTetrominoDown = true;
   generateTetromino();
 }
 
@@ -303,6 +310,7 @@ function rotateMatrix(matrixTetromino) {
 
 //PRESS KEY FUNCTIONs
 function onKeyDown(e) {
+  console.log(e.key);
   switch (e.key) {
     case "ArrowDown":
       moveTetaminaDown();
@@ -316,6 +324,9 @@ function onKeyDown(e) {
     case "ArrowUp":
       rotate();
       break;
+    case " ":
+      moweToEnd();
+      break;
   }
   draw();
 }
@@ -327,8 +338,16 @@ function moveTetaminaDown() {
     tetromino.row -= 1;
     placeTetromino();
     removeCompletedRows();
+  } else {
+    isTetrominoDown = false;
   }
+
   draw();
+}
+function moweToEnd() {
+  while (!isTetrominoDown) {
+    moveTetaminaDown();
+  }
 }
 
 function moveTetaminaLeft() {
@@ -543,7 +562,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const backgroundContainer = document.getElementById("background-container");
   let intervalId;
 
-
   function createFallingSquare() {
     const square = document.createElement("div");
     square.className = "falling-square";
@@ -582,7 +600,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add an event handler for losing focus
   window.addEventListener("blur", function () {
     // stop all animation
-    showCustomModal("Pause", '', 'Continue', 'Restart');
+    showCustomModal("Pause", "", "Continue", "Restart");
     clearInterval(intervalId);
     stopTimer();
   });
@@ -662,6 +680,10 @@ function addButton() {
     moveTetaminaRight();
     draw();
   });
+  const spaceButton = createButton("space-button", "⇓", () => {
+    moweToEnd();
+    draw();
+  });
 
   const otherButtons = document.createElement("div");
   otherButtons.classList.add("other-buttons");
@@ -672,6 +694,7 @@ function addButton() {
 
   controlsButton.appendChild(rotateButton);
   controlsButton.appendChild(otherButtons);
+  controlsButton.appendChild(spaceButton);
 
   inform.insertBefore(controlsButton, inform.children[1]);
 }

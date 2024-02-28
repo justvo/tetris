@@ -57,6 +57,7 @@ let touchEndX = 0;
 
 let touchStartY = 0;
 let touchEndY = 0;
+let isMobile;
 
 //MAIN
 
@@ -78,8 +79,8 @@ const btnReset = document.getElementById("btnReset");
 
 btnInfo.addEventListener("click", function () {
   showCustomModal(
-    "Control is with the right, left and down arrows, turn by pressing the up arrow",
-    "",
+    "Control is with the ←, → and ↓ , turn by pressing the ↑ key/buttons ",
+    "When using from the phone, swipes are available. \nTo reload the page, make a long swipe",
     "Continue"
   );
 });
@@ -124,6 +125,7 @@ document.addEventListener('touchend', function (event) {
 
 function handleSwipe() {
     const threshold = 50; 
+    const reloadSwipe = 500;
 
     const deltaX = touchEndX - touchStartX;
     const deltaY = touchEndY - touchStartY;
@@ -144,6 +146,10 @@ function handleSwipe() {
             moveTetaminaDown();
         }
         draw();
+    }
+    if(Math.abs(deltaY) > reloadSwipe){
+        location.reload();
+
     }
 }
 ///////////////and main
@@ -536,6 +542,7 @@ function resetPlayField() {
 document.addEventListener("DOMContentLoaded", function () {
   const backgroundContainer = document.getElementById("background-container");
   let intervalId;
+
 
   function createFallingSquare() {
     const square = document.createElement("div");

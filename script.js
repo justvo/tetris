@@ -51,6 +51,13 @@ let score = 0;
 let isTimerRunning;
 let lastTime = 0;
 
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+let touchStartY = 0;
+let touchEndY = 0;
+
 //MAIN
 
 generatePlayField();
@@ -100,6 +107,45 @@ showCustomModal(
   "Start"
 );
 
+
+
+
+
+document.addEventListener('touchstart', function (event) {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY
+});
+
+document.addEventListener('touchend', function (event) {
+    touchEndX = event.changedTouches[0].clientX;
+    touchEndY = event.changedTouches[0].clientY;
+    handleSwipe();
+});
+
+function handleSwipe() {
+    const threshold = 50; 
+
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+
+
+    if (Math.abs(deltaX) > threshold) {
+        if (deltaX > 0) {
+            moveTetaminaRight();
+        } else {
+            moveTetaminaLeft();
+        }
+        draw();
+    }
+    if (Math.abs(deltaY) > threshold) {
+        if (deltaY < 0) {
+            rotate();
+        } else {
+            moveTetaminaDown();
+        }
+        draw();
+    }
+}
 ///////////////and main
 
 //generate tetromino

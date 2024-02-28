@@ -610,7 +610,7 @@ function setInitialWindowSize() {
   initialWindowWidth = window.innerWidth;
   initialWindowHeight = window.innerHeight;
 
-  if (initialWindowWidth < 900) {
+  if (initialWindowWidth < 600) {
     addButton();
   } else {
     removeButton();

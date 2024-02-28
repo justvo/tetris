@@ -87,6 +87,8 @@ btnStart.addEventListener('click', function () {
     startTimer();
 })
 btnStop.addEventListener('click', function () {
+    let chitmessage ="This button is a cheat whether you choose to use it or not, it stops the tetromin from falling automatically. Do you agree to use it? (to turn off, press the 'Start' button)"
+    showCustomModal(chitmessage, '', 'No, continue', 'Yes, cheaters are cool!!');
     stopTimer();
 })
 btnReset.addEventListener('click', function () {
@@ -445,58 +447,74 @@ function isRowCompleted(row) {
 //CUSTOMALERT
 function showCustomModal(messageTitle, messageText, confirm, cancel) {
     stopTimer();
-    const modal = document.getElementById('custom-modal');
 
-    const titleContant = document.getElementById('modal-title')
-    const textContant = document.getElementById('modal-text')
+    const modal = document.createElement('div');
+    modal.classList.add('modal');
 
-    titleContant.textContent = messageTitle;
-    textContant.textContent = messageText;
+    const modalContent = document.createElement('div');
+    modalContent.classList.add('modal-content');
 
+    const buttons =  document.createElement('div');
+    buttons.classList.add('buttons');
+
+    const modalTitle = document.createElement('p');
+    modalTitle.classList.add('modal-title');
+    modalTitle.textContent = messageTitle;
+
+    const modalMessage = document.createElement('p');
+    modalMessage.classList.add('modal-text');
+    modalMessage.textContent = messageText;
+
+    const confirmButton = document.createElement('button');
+    confirmButton.classList.add('btn-ok');
+
+    confirmButton.textContent = confirm;
+    confirmButton.addEventListener('click', () => {
+        if (confirm === 'Restart') {
+            resetPlayField();
+        }
+        startTimer();
+        modal.style.display = 'none';
+        modal.remove();
+    });
+    if(cancel){
+        const cancelButton = document.createElement('button');
+        cancelButton.classList.add('btn-cancel');
+        cancelButton.textContent = cancel;
+        cancelButton.addEventListener('click', () => {
+            if (cancel === 'Restart') {
+                resetPlayField();
+                startTimer();
+                console.log('resetPlayField');
+            }
+            if (cancel !== 'Yes, cheaters are cool!!') {
+                stopTimer();
+            }
+            modal.style.display = 'none';
+            modal.remove();
+        });
+        buttons.appendChild(cancelButton);
+    }
+
+
+    
+    modal.appendChild(modalContent);
+    modalContent.appendChild(modalTitle);
+    modalContent.appendChild(modalMessage);
+    modalContent.appendChild(buttons);
+
+    buttons.appendChild(confirmButton);
     modal.style.display = 'block';
 
-
-    const btnOK = document.getElementById('btn-ok');
-    btnOK.textContent = confirm
-
-    const btnCancel = document.getElementById('btn-cancel');
-    if (!cancel) {
-        btnCancel.style.display = 'none'
-    } else {
-        btnCancel.style.display = 'block'
-
-    }
-    btnCancel.textContent = cancel;
-
-    btnCancel.addEventListener('click', function () {
-
-        if (cancel == 'Restart') {
-            resetPlayField();
-        };
-
-        modal.style.display = 'none';
-        startTimer();
-
-    });
-
-
-
-    btnOK.addEventListener('click', function () {
-        if (confirm == 'Restart') {
-            resetPlayField();
-        };
-        startTimer();
-        modal.style.display = 'none';
-    });
-
-    // confirm = '';
-    // cancel = '';
+    // Append the modal to your desired container in the DOM
+    document.body.appendChild(modal);
 }
 
 
 
 
-//bacground animation
+
+//background animation
 document.addEventListener('DOMContentLoaded', function () {
     const backgroundContainer = document.getElementById('background-container');
     let intervalId;
@@ -520,7 +538,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function animateFallingSquare(square) {
         let positionY = 0;
-        const speed = 1;
+        const speed = 0.2;
 
         function moveSquare() {
             positionY += speed;
@@ -576,5 +594,5 @@ function resetPlayField() {
     draw();
     score = 0;
     scoreValueElement.textContent = `0000${score}`.slice(-6);
-    showCustomModal('The game was restarted');
+    showCustomModal('The game was restarted','','Ok');
 }

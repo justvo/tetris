@@ -155,7 +155,7 @@ body {
 
 .falling-square {
   position: absolute;
-  opacity: 0.8;
+  opacity: 0.3;
 }
 
 .next-tetromino {
@@ -251,8 +251,8 @@ body {
   margin-top: 10px;
 }
 
-#btn-ok,
-#btn-cancel {
+.btn-ok,
+.btn-cancel {
   padding: 10px 20px;
   cursor: pointer;
   background-color: #c455ff;
@@ -265,7 +265,7 @@ body {
   margin: 0 5px;
 }
 
-#btn-ok:hover,
-#btn-cancel:hover {
+.btn-ok:hover,
+.btn-cancel:hover {
   background-color: #3658a7;
 }

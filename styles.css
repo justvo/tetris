@@ -6,6 +6,7 @@
   -webkit-touch-callout: none;
   touch-action: none;
 }
+
 html {
   height: 100%;
   overflow: hidden;
@@ -37,13 +38,13 @@ body {
   justify-content: center;
   align-items: center;
 }
-.visible-grid{
+
+.visible-grid {
   background-color: #3658a7;
 }
 
 .grid {
   background: rgba(20, 1, 114, 0.5);
-
   border-radius: 10px;
   padding: 1vh;
   display: grid;
@@ -55,7 +56,6 @@ body {
   height: min(3vh, 7vh);
   width: min(3vh, 7vh);
   border-radius: 0.3vh;
-
 }
 
 .grid .O {
@@ -85,8 +85,8 @@ body {
 .grid .L {
   background: rgb(255, 133, 19);
 }
-.inform {
 
+.inform {
   width: 300px;
   height: 100%;
   margin-left: 5px;
@@ -97,6 +97,7 @@ body {
   justify-content: flex-start;
   border-radius: 10px;
 }
+
 .game-info {
   width: 100%;
   height: 95%;
@@ -104,15 +105,15 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  
 }
+
 .buttons-container {
   display: flex;
   width: 100%;
   align-items: center;
   justify-content: flex-end;
 }
-.styled-button{
+.styled-button {
   font-family: "Press Start 2P", cursive;
   font-size: 2em;
   color: white;
@@ -121,13 +122,13 @@ body {
   border-radius: 5px;
   cursor: pointer;
   margin-right: 5px;
-
 }
 .styled-button:hover {
   background-color: rgba(20, 1, 114, 1);
 }
 
- .menu-button {
+.menu-button {
+  line-height: 25px;
   flex-basis: calc(50% - 5px);
   padding: 10px 0px;
   font-family: "Press Start 2P", cursive;
@@ -139,15 +140,18 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
-.menu-button{
+.menu-button {
   margin: 10px;
 }
-.music-button{
-  line-height: 1em;
+.music-button {
+  width: 40px;
+  font-size: 1.5em;
   margin: 10px;
 }
 
-.score, .time, .lvl{
+.score,
+.time,
+.lvl {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -175,7 +179,7 @@ body {
 }
 
 .score-title {
-  font-size: 2em; 
+  font-size: 2em;
   text-align: center;
   color: rgb(250, 245, 239);
   border-radius: 10px;
@@ -224,10 +228,7 @@ body {
   #level {
     font-size: 1.2em;
   }
-
-
 }
-
 
 #background-container {
   position: fixed;
@@ -249,7 +250,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin: 10px 0 10px 0;
 }
 
 .next-tetromino h3 {
@@ -307,7 +308,9 @@ body {
   background: rgb(255, 133, 19);
 }
 
-.modal, .modal-menu, #list-container {
+.modal,
+.modal-menu,
+#list-container {
   display: none;
   position: fixed;
   top: 0;
@@ -317,18 +320,20 @@ body {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.7);
 }
-ul{
-   text-align: start; ;
+ul {
+  text-align: start;
 }
-.list-item{
+.list-item {
   list-style-type: none;
   margin-bottom: 5px;
 }
-.list-item:nth-child(1){
+.list-item:nth-child(1) {
   margin-top: 30px;
 }
 
-.modal-content, .modal-menu-content, #list-container-content {
+.modal-content,
+.modal-menu-content,
+#list-container-content {
   position: absolute;
   min-width: 350px;
   top: 50%;
@@ -347,10 +352,9 @@ ul{
   text-align: center;
 }
 
-.buttons-menu{
+.buttons-menu {
   display: flex;
   flex-direction: column;
-
 }
 .buttons {
   display: flex;
@@ -377,10 +381,6 @@ ul{
   background-color: #3658a7;
 }
 
-
-
-
-
 /* for mobile */
 @media screen and (max-width: 600px) {
   body {
@@ -404,9 +404,9 @@ ul{
     width: 95%;
   }
 
-  .next-tetromino {
-    margin-top: 10px;
-  }
+  /* .next-tetromino {
+    margin: 10px 0 10px 0;
+  } */
 
   .next-tetromino h3 {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -425,12 +425,10 @@ ul{
     height: 100%;
     margin: 0;
   }
- 
 
-
-.styled-button{
-  font-size: 1.2em;
-}
+  .styled-button {
+    font-size: 1.2em;
+  }
 
   .controls-button {
     display: flex;
@@ -441,25 +439,23 @@ ul{
     background-color: rgba(20, 1, 114, 0.5);
     border: none;
     border-radius: 70px;
-    
-}
+  }
 
-.other-buttons {
+  .other-buttons {
     display: flex;
     justify-content: center;
-}
-
+  }
 
   .control-button {
-    width: 40px; 
-    height: 40px; 
+    width: 40px;
+    height: 40px;
     font-size: 18px;
     background-color: rgba(20, 1, 114, 0.8);
     border: none;
     border-radius: 5px;
     color: white;
     cursor: pointer;
-    margin: 2px; 
+    margin: 2px;
   }
 
   .control-button:hover {
@@ -473,5 +469,4 @@ ul{
     margin: auto;
     font-size: 0.9em;
   }
-
 }

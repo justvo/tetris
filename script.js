@@ -70,7 +70,7 @@ let isMusic = false;
 const audio = new Howl({
   src: ["music/tetrisMusic.mp3"],
   loop: true,
-  volume: 0.1, // Initial volume (0.0 to 1.0)
+  volume: 0.1,
   preload: "metadata",
 });
 
@@ -293,7 +293,6 @@ function rotateMatrix(matrixTetromino) {
 
 //PRESS KEY FUNCTIONs
 function onKeyDown(e) {
-  console.log(e.key);
   switch (e.key) {
     case "ArrowDown":
       moveTetaminaDown();
@@ -364,7 +363,6 @@ function isValid() {
 }
 
 function isOutSideOfGameBoard(row, column) {
-  console.log;
   return (
     tetromino.matrix[row][column] &&
     (tetromino.column + column < 0 ||
@@ -388,7 +386,6 @@ function checkGameOver() {
       leaderBoard.push(score);
       leaderBoard.sort((a, b) => b - a);
 
-      console.log(leaderBoard);
       break;
     }
   }
@@ -408,7 +405,6 @@ function isRowCompleted(row) {
 function timerCallback(currentTime) {
   const MIN_SPEED = 50;
   if (!isTimerRunning || !isPaused) {
-    console.log("err1");
     return;
   }
 
@@ -417,7 +413,6 @@ function timerCallback(currentTime) {
 
   // If enough time has passed, move the tetramino down and increase the score
   if (deltaTime >= speedOfFallen()) {
-    console.log("err2");
 
     moveTetaminaDown();
     lastTime = currentTime;
@@ -462,7 +457,7 @@ function updateDisplay() {
 }
 
 function getCurrLvl() {
-  level = Math.ceil((score+1) / 500);
+  level = Math.ceil((score + 1) / 500);
 
   return level;
 }
@@ -496,7 +491,7 @@ function showCustomModal(messageTitle, messageText, confirm, cancel) {
   stopTimer();
   isPaused = true;
   const isModalExists = document.querySelector(".modal");
-  // const isMenuExist = document.querySelector(".modal-menu");
+  const isMenuExist = document.querySelector(".modal-menu");
 
   if (isModalExists) {
     return null;
@@ -523,14 +518,18 @@ function showCustomModal(messageTitle, messageText, confirm, cancel) {
   confirmButton.classList.add("btn-ok");
   confirmButton.textContent = confirm;
   confirmButton.addEventListener("click", () => {
-    if (confirm === "Start") {
-      audio.play();
-      isMusic = true;
+    switch (confirm) {
+      case 'Start':
+        audio.play();
+        isMusic = true;
+        break;
+      case 'Restart':
+        resetPlayField();
+        break;
     }
-    if (confirm === "Restart") {
-      resetPlayField();
-    }
+
     startTimer();
+    isMenuExist ? isMenuExist.remove() : null;
     modal.style.display = "none";
     modal.remove();
   });
@@ -541,18 +540,14 @@ function showCustomModal(messageTitle, messageText, confirm, cancel) {
     cancelButton.textContent = cancel;
     cancelButton.addEventListener("click", () => {
       if (cancel === "Restart") {
-        modal.style.display = "none";
+        isMenuExist ? isMenuExist.remove() : null;
         modal.remove();
         resetPlayField();
-        startTimer();
-        console.log("resetPlayField");
-      }
-      if (cancel !== "Yes, cheaters are cool!!") {
-        stopTimer();
       }
       modal.style.display = "none";
       modal.remove();
     });
+
     buttons.appendChild(cancelButton);
   }
 
@@ -628,7 +623,9 @@ function showModalMenu() {
     {
       className: "menu-button",
       label: "Close",
-      action: () => {},
+      action: () => {
+        startTimer();
+      },
     },
 
   ];
@@ -645,26 +642,27 @@ function showModalMenu() {
     );
     buttons.appendChild(buttonElement);
   });
-  const musicControle =document.createElement('div');
+  const musicControle = document.createElement('div');
 
   const musicButton = document.createElement('button');
-  musicButton.textContent = isMusic?'🔈':'🔇';
+  musicButton.textContent = isMusic ? '🔈' : '🔇';
   musicButton.classList.add('menu-button')
   musicButton.classList.add('music-button')
-  musicButton.addEventListener('click', ()=>{
-    if(!isMusic){
+  musicButton.addEventListener('click', () => {
+    if (!isMusic) {
       audio.mute(true)
       musicButton.textContent = '🔇'
-    }else{
+    } else {
       audio.mute(false)
       musicButton.textContent = '🔈'
     }
-    isMusic=!isMusic;
+    isMusic = !isMusic;
   })
 
   const volumeControl = document.createElement('input')
   volumeControl.type = 'range'
-  volumeControl.value = audio.volume * 100;
+
+  volumeControl.value = (audio.volume() * 100).toFixed(0);
 
   volumeControl.addEventListener('input', changeVolume)
 
@@ -672,9 +670,10 @@ function showModalMenu() {
   musicControle.appendChild(musicButton)
   musicControle.appendChild(volumeControl)
   buttons.appendChild(musicControle)
-  
-  
+
+
   function changeVolume() {
+
     const volume = volumeControl.value / 100;
     audio.volume(volume);
   }
@@ -699,10 +698,10 @@ function showLiderBoard() {
   list.textContent = 'Leader Board'
 
 
-  for(let i=0; i<5;i++){
+  for (let i = 0; i < 5; i++) {
     const listItem = document.createElement("li");
     listItem.classList.add('list-item')
-    listItem.textContent = `${i+1} - ${(leaderBoard[i]!=null)?leaderBoard[i]:'Unknown'}`;
+    listItem.textContent = `${i + 1} - ${(leaderBoard[i] != null) ? leaderBoard[i] : 'Unknown'}`;
     list.appendChild(listItem);
   }
 
@@ -725,7 +724,6 @@ function showLiderBoard() {
 function resetPlayField() {
   elapsedTime = 0;
   updateDisplay();
-
   generateNextTetromino();
   generateTetromino();
   playField = new Array(PLAY_FIELD_ROWS)
@@ -738,7 +736,6 @@ function resetPlayField() {
 }
 
 //background animation
-
 document.addEventListener("DOMContentLoaded", function () {
   const backgroundContainer = document.getElementById("background-container");
   let intervalId;
@@ -783,7 +780,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // stop all animation
     audio.mute(true);
     isMusic = false;
-    showCustomModal("Pause", "", "Continue", "Restart");
+    showCustomModal("Pause", " ", "Continue", "Restart");
     clearInterval(intervalId);
     stopTimer();
   });
@@ -796,19 +793,7 @@ document.addEventListener("DOMContentLoaded", function () {
     isMusic = true;
   });
 
-  // document.addEventListener("visibilitychange", function () {
-  //   if (document.hidden) {
-  //     // showCustomModal("Pause", "", "Continue", "Restart");
-  //     clearInterval(intervalId);
-  //     stopTimer();
-  //     audio.mute(true);
-  //     isMusic=false;
-  //   }
-  //   else{
-  //     audio.mute(false);
-  //     isMusic=true
-  //   }
-  // });
+
 
   //StartbacgroundAnimation
   intervalId = setInterval(createFallingSquare, 60);

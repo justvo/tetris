@@ -3,29 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"
+    />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
     />
     <title>Document</title>
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js"></script>
   </head>
 
   <body>
+
     <div class="title">TETRIS</div>
 
     <div class="content">
+
       <div class="grid-box">
         <div class="grid"></div>
       </div>
 
       <div class="inform">
         <div class="buttons-container inform-item">
-          <button id="btnStart" class="styled-button">Start</button>
-          <button id="btnStop" class="styled-button">Stop</button>
-          <button id="btnReset" class="styled-button">Reset</button>
-          <button id="btnInfo" class="styled-button">Info</button>
+          <button id="btnMenu" class="styled-button">Start</button>
         </div>
 
         <div class="game-info">
@@ -35,14 +38,29 @@
           </div>
 
           <div class="score-container inform-item">
-            <div class="score-title">Score</div>
-            <div class="score-value">000000</div>
+            <div class="score">
+              <div class="score-title">Score</div>
+              <div class="score-value">000000</div>
+            </div>
+            
+            <div class="time">
+              <h4 class="timer-title">Time</h4>
+              <div id="timer">00:00</div>
+            </div>
+            <div class="lvl">
+              <h4 class="level-title">Level</h4>
+              <div id="level">1</div>
+            </div>
           </div>
+
         </div>
       </div>
     </div>
+    <div class="mobile-buttons"></div>
+
 
     <div id="background-container"></div>
+
     <script src="script.js"></script>
   </body>
 </html>

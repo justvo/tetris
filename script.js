@@ -2,7 +2,6 @@ const PLAY_FIELD_COLUMS = 10;
 const PLAY_FIELD_ROWS = 20;
 
 const TETROMINO_NAMES = ["O", "J", "T", "I", "S", "Z", "L"];
-let COPY_CTETROMINO_NAMES = ["O", "J", "T", "I", "S", "Z", "L"];
 const TETROMINOES = {
   O: [
     [1, 1],
@@ -42,76 +41,62 @@ const TETROMINOES = {
 };
 
 //var
+let leaderBoard = [];
 let playField;
 let tetromino;
 let nextTetromino;
-
+let COPY_TETROMINO_NAMES = ["O", "J", "T", "I", "S", "Z", "L"];
 let scoreValueElement = document.querySelector(".score-value");
 let score = 0;
-
+let level = 1;
+let isGridShowed = false;
 let isTimerRunning;
 let lastTime = 0;
 
 let touchStartX = 0;
 let touchEndX = 0;
-
 let touchStartY = 0;
 let touchEndY = 0;
-let isMobile;
+
 let isTetrominoDown;
 
+let isPaused = false;
+let elapsedTime = 0;
+
+let startVolume = 0.1;
+let isMusic = false;
+
 //MAIN
+const audio = new Howl({
+  src: ["music/tetrisMusic.mp3"],
+  loop: true,
+  volume: 0.1, // Initial volume (0.0 to 1.0)
+  preload: "metadata",
+});
+
 
 generatePlayField();
 const nextTetrominoGrid = document.querySelector(".next-tetromino-grid");
 generateNextTetromino();
 generateTetromino();
-
 const cells = document.querySelectorAll(".grid div");
-
 draw();
 document.addEventListener("keydown", onKeyDown);
 startTimer();
 
-const btnInfo = document.getElementById("btnInfo");
-const btnStart = document.getElementById("btnStart");
-const btnStop = document.getElementById("btnStop");
-const btnReset = document.getElementById("btnReset");
-
-btnInfo.addEventListener("click", function () {
-  showCustomModal(
-    "Control is with the ←, → and ↓ , turn by pressing the ↑ key/buttons, also use ⇓ for for a quick drop ",
-    "When using from the phone, swipes are available. \nTo reload the page, make a long swipe",
-    "Continue"
-  );
-});
-
-btnStart.addEventListener("click", function () {
-  startTimer();
-});
-
-btnStop.addEventListener("click", function () {
-  let chitmessage =
-    "This button is a cheat whether you choose to use it or not, it stops the tetromin from falling automatically. Do you agree to use it? (to turn off, press the 'Start' button)";
-  showCustomModal(chitmessage, "", "No, continue", "Yes, cheaters are cool!!");
+const btnMenu = document.getElementById("btnMenu");
+btnMenu.textContent = "⚙";
+btnMenu.addEventListener("click", function () {
+  showModalMenu();
   stopTimer();
 });
 
-btnReset.addEventListener("click", function () {
-  showCustomModal(
-    "Are you sure?",
-    "Really want to restart?",
-    "No, contunue",
-    "Restart"
-  );
-});
 
 showCustomModal(
   "Be careful, when switching to another window, the game stops",
   "Ready to start?",
   "Start"
 );
-
 
 document.addEventListener("touchstart", function (event) {
   touchStartX = event.touches[0].clientX;
@@ -180,13 +165,12 @@ function generateNextTetromino() {
 
 //random
 function tetraminoItem() {
-    const randomIndex = Math.floor(Math.random() * COPY_CTETROMINO_NAMES.length);
-    const randomElement = COPY_CTETROMINO_NAMES.splice(randomIndex, 1)[0];
-    if(COPY_CTETROMINO_NAMES.length<1){
-        COPY_CTETROMINO_NAMES = [...TETROMINO_NAMES]
-    }
-    return randomElement;
-
+  const randomIndex = Math.floor(Math.random() * COPY_TETROMINO_NAMES.length);
+  const randomElement = COPY_TETROMINO_NAMES.splice(randomIndex, 1)[0];
+  if (COPY_TETROMINO_NAMES.length < 1) {
+    COPY_TETROMINO_NAMES = [...TETROMINO_NAMES];
+  }
+  return randomElement;
 }
 
 function convertPositionToIndex(row, column) {
@@ -206,9 +190,7 @@ function generatePlayField() {
 
 function generateTetromino() {
   const name =
-    nextTetromino && nextTetromino.name
-      ? nextTetromino.name
-      : tetraminoItem();
+    nextTetromino && nextTetromino.name ? nextTetromino.name : tetraminoItem();
 
   const matrix = TETROMINOES[name];
   const column = PLAY_FIELD_COLUMS / 2 - Math.floor(matrix.length / 2);
@@ -277,6 +259,7 @@ function draw() {
       cell.removeAttribute("class");
     }
   });
+  changeVisibleGrid();
   drawPlayField();
   drawTetromino();
 }
@@ -402,6 +385,10 @@ function checkGameOver() {
     if (playField[1][column] !== 0) {
       stopTimer();
       showCustomModal("GAME OVER", "Do you want to restart?", "Restart");
+      leaderBoard.push(score);
+      leaderBoard.sort((a, b) => b - a);
+
+      console.log(leaderBoard);
       break;
     }
   }
@@ -419,7 +406,9 @@ function isRowCompleted(row) {
 //AUTOMOVE TO DOWN
 
 function timerCallback(currentTime) {
-  if (!isTimerRunning) {
+  const MIN_SPEED = 50;
+  if (!isTimerRunning || !isPaused) {
+    console.log("err1");
     return;
   }
 
@@ -427,9 +416,18 @@ function timerCallback(currentTime) {
   const deltaTime = currentTime - lastTime;
 
   // If enough time has passed, move the tetramino down and increase the score
-  if (deltaTime >= Math.max(50, 1000 - score * 0.01)) {
+  if (deltaTime >= speedOfFallen()) {
+    console.log("err2");
+
     moveTetaminaDown();
     lastTime = currentTime;
+    elapsedTime += deltaTime;
+    updateDisplay();
+  }
+
+  function speedOfFallen() {
+    const currSpeed = 1000 - getCurrLvl() * 50;
+    return Math.max(MIN_SPEED, currSpeed);
   }
 
   // Request the next frame
@@ -439,6 +437,7 @@ function timerCallback(currentTime) {
 function startTimer() {
   if (!isTimerRunning) {
     isTimerRunning = true;
+    lastTime = performance.now();
     timerMove = requestAnimationFrame(timerCallback);
   }
 }
@@ -448,6 +447,24 @@ function stopTimer() {
     cancelAnimationFrame(timerMove);
     isTimerRunning = false;
   }
+}
+
+function updateDisplay() {
+  const minutes = Math.floor(elapsedTime / 60000);
+  const seconds = Math.floor((elapsedTime % 60000) / 1000);
+  const formattedTime = `${String(minutes).padStart(2, "0")}:${String(
+    seconds
+  ).padStart(2, "0")}`;
+  const levelDisplay = ` ${getCurrLvl()}`;
+
+  document.getElementById("timer").textContent = formattedTime;
+  document.getElementById("level").textContent = levelDisplay;
+}
+
+function getCurrLvl() {
+  level = Math.ceil((score+1) / 500);
+
+  return level;
 }
 
 //REMOVE FUNCTIONS
@@ -477,7 +494,9 @@ function removeCompletedRows() {
 //MODAL-MESSAGE
 function showCustomModal(messageTitle, messageText, confirm, cancel) {
   stopTimer();
+  isPaused = true;
   const isModalExists = document.querySelector(".modal");
+  // const isMenuExist = document.querySelector(".modal-menu");
 
   if (isModalExists) {
     return null;
@@ -504,6 +523,10 @@ function showCustomModal(messageTitle, messageText, confirm, cancel) {
   confirmButton.classList.add("btn-ok");
   confirmButton.textContent = confirm;
   confirmButton.addEventListener("click", () => {
+    if (confirm === "Start") {
+      audio.play();
+      isMusic = true;
+    }
     if (confirm === "Restart") {
       resetPlayField();
     }
@@ -511,6 +534,7 @@ function showCustomModal(messageTitle, messageText, confirm, cancel) {
     modal.style.display = "none";
     modal.remove();
   });
+
   if (cancel) {
     const cancelButton = document.createElement("button");
     cancelButton.classList.add("btn-cancel");
@@ -544,8 +568,164 @@ function showCustomModal(messageTitle, messageText, confirm, cancel) {
   document.body.appendChild(modal);
 }
 
+function showModalMenu() {
+  const isMenuExist = document.querySelector(".modal-menu");
+
+  if (isMenuExist) {
+    return null;
+  }
+
+  const modal = document.createElement("div");
+  modal.classList.add("modal-menu");
+  modal.style.display = "block";
+
+  const modalContent = document.createElement("div");
+  modalContent.classList.add("modal-menu-content");
+
+  const title = document.createElement("h2");
+  title.textContent = "Menu";
+  modalContent.appendChild(title);
+
+  const buttons = document.createElement("div");
+  buttons.classList.add("buttons-menu");
+
+  const buttonsData = [
+    {
+      className: "menu-button",
+      label: "Change grid visibility",
+      action: () => {
+        ischangeVisibleGrid();
+        changeVisibleGrid();
+        startTimer();
+      },
+    },
+    {
+      className: "menu-button",
+      label: "Info",
+      action: () =>
+        showCustomModal(
+          "Control is with the ←, → and ↓ , turn by pressing the ↑ key/buttons, also use ⇓ for for a quick drop ",
+          "When using from the phone, swipes are available. \nTo reload the page, make a long swipe",
+          "Continue"
+        ),
+    },
+    {
+      className: "menu-button",
+      label: "Restart",
+      action: () =>
+        showCustomModal(
+          "Are you sure?",
+          "Really want to restart?",
+          "No, contunue",
+          "Restart"
+        ),
+    },
+    {
+      className: "menu-button",
+      label: "Leader board",
+      action: () => showLiderBoard(),
+    },
+    {
+      className: "menu-button",
+      label: "Close",
+      action: () => {},
+    },
+
+  ];
+
+  buttonsData.forEach((buttonData) => {
+    const buttonElement = createButton(
+      "modal-buttons",
+      buttonData.className,
+      buttonData.label,
+      () => {
+        buttonData.action();
+        closeModalMenu();
+      }
+    );
+    buttons.appendChild(buttonElement);
+  });
+  const musicControle =document.createElement('div');
+
+  const musicButton = document.createElement('button');
+  musicButton.textContent = isMusic?'🔈':'🔇';
+  musicButton.classList.add('menu-button')
+  musicButton.classList.add('music-button')
+  musicButton.addEventListener('click', ()=>{
+    if(!isMusic){
+      audio.mute(true)
+      musicButton.textContent = '🔇'
+    }else{
+      audio.mute(false)
+      musicButton.textContent = '🔈'
+    }
+    isMusic=!isMusic;
+  })
+
+  const volumeControl = document.createElement('input')
+  volumeControl.type = 'range'
+  volumeControl.value = audio.volume * 100;
+
+  volumeControl.addEventListener('input', changeVolume)
+
+
+  musicControle.appendChild(musicButton)
+  musicControle.appendChild(volumeControl)
+  buttons.appendChild(musicControle)
+  
+  
+  function changeVolume() {
+    const volume = volumeControl.value / 100;
+    audio.volume(volume);
+  }
+
+
+  modalContent.appendChild(buttons);
+  modal.appendChild(modalContent);
+  document.body.appendChild(modal);
+
+  function closeModalMenu() {
+    modal.remove();
+  }
+}
+
+function showLiderBoard() {
+  const liderList = document.createElement("div");
+  liderList.id = "list-container";
+  const liderListContent = document.createElement("div");
+  liderList.id = "list-container-content";
+
+  const list = document.createElement("ul");
+  list.textContent = 'Leader Board'
+
+
+  for(let i=0; i<5;i++){
+    const listItem = document.createElement("li");
+    listItem.classList.add('list-item')
+    listItem.textContent = `${i+1} - ${(leaderBoard[i]!=null)?leaderBoard[i]:'Unknown'}`;
+    list.appendChild(listItem);
+  }
+
+  const closeButton = document.createElement("div");
+  closeButton.id = "close-btn";
+  closeButton.classList.add('menu-button')
+  closeButton.textContent = "Close";
+  closeButton.onclick = () => {
+    document.body.removeChild(liderList);
+  };
+
+  liderListContent.appendChild(list);
+  liderListContent.appendChild(closeButton);
+  liderList.appendChild(liderListContent);
+
+  document.body.appendChild(liderList);
+}
+
 ///RESET FUNCTION
 function resetPlayField() {
+  elapsedTime = 0;
+  updateDisplay();
+
   generateNextTetromino();
   generateTetromino();
   playField = new Array(PLAY_FIELD_ROWS)
@@ -558,6 +738,7 @@ function resetPlayField() {
 }
 
 //background animation
+
 document.addEventListener("DOMContentLoaded", function () {
   const backgroundContainer = document.getElementById("background-container");
   let intervalId;
@@ -600,6 +781,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add an event handler for losing focus
   window.addEventListener("blur", function () {
     // stop all animation
+    audio.mute(true);
+    isMusic = false;
     showCustomModal("Pause", "", "Continue", "Restart");
     clearInterval(intervalId);
     stopTimer();
@@ -609,7 +792,23 @@ document.addEventListener("DOMContentLoaded", function () {
   window.addEventListener("focus", function () {
     // StartbacgroundAnimation
     intervalId = setInterval(createFallingSquare, 60);
+    audio.mute(false);
+    isMusic = true;
   });
+
+  // document.addEventListener("visibilitychange", function () {
+  //   if (document.hidden) {
+  //     // showCustomModal("Pause", "", "Continue", "Restart");
+  //     clearInterval(intervalId);
+  //     stopTimer();
+  //     audio.mute(true);
+  //     isMusic=false;
+  //   }
+  //   else{
+  //     audio.mute(false);
+  //     isMusic=true
+  //   }
+  // });
 
   //StartbacgroundAnimation
   intervalId = setInterval(createFallingSquare, 60);
@@ -635,8 +834,10 @@ function setInitialWindowSize() {
   }
 }
 
-// Викликати функцію при завантаженні сторінки
-window.addEventListener("load", setInitialWindowSize);
+// Call the function on page load
+window.addEventListener("load", () => {
+  setInitialWindowSize();
+});
 
 window.addEventListener("resize", () => {
   setInitialWindowSize();
@@ -644,46 +845,53 @@ window.addEventListener("resize", () => {
 
 function addButton() {
   const isButtonsExists = document.querySelector(".controls-button");
+
   if (isButtonsExists) {
     return null;
   }
-  const inform = document.querySelector(".inform");
+  const mobileButtons = document.querySelector(".mobile-buttons");
 
   const controlsButton = document.createElement("div");
   controlsButton.classList.add("controls-button");
 
-  const createButton = (className, textContent, clickHandler) => {
-    const button = document.createElement("button");
-    button.classList.add("control-button");
-    button.classList.add(className);
-    button.addEventListener("click", clickHandler);
-    button.innerHTML = textContent;
-    return button;
-  };
+  const rotateButton = createButton(
+    "control-button",
+    "rotate-button",
+    "↻",
+    () => {
+      rotate();
+      draw();
+    }
+  );
 
-  const rotateButton = createButton("rotate-button", "↻", () => {
-    rotate();
-    draw();
-  });
-
-  const leftButton = createButton("left-button", "←", () => {
+  const leftButton = createButton("control-button", "left-button", "←", () => {
     moveTetaminaLeft();
     draw();
   });
 
-  const downButton = createButton("down-button", "↓", () => {
+  const downButton = createButton("control-button", "down-button", "↓", () => {
     moveTetaminaDown();
     draw();
   });
 
-  const rightButton = createButton("right-button", "→", () => {
-    moveTetaminaRight();
-    draw();
-  });
-  const spaceButton = createButton("space-button", "⇓", () => {
-    moweToEnd();
-    draw();
-  });
+  const rightButton = createButton(
+    "control-button",
+    "right-button",
+    "→",
+    () => {
+      moveTetaminaRight();
+      draw();
+    }
+  );
+  const spaceButton = createButton(
+    "control-button",
+    "space-button",
+    "⇓",
+    () => {
+      moweToEnd();
+      draw();
+    }
+  );
 
   const otherButtons = document.createElement("div");
   otherButtons.classList.add("other-buttons");
@@ -696,12 +904,38 @@ function addButton() {
   controlsButton.appendChild(otherButtons);
   controlsButton.appendChild(spaceButton);
 
-  inform.insertBefore(controlsButton, inform.children[1]);
+  mobileButtons.insertBefore(controlsButton, mobileButtons.children[1]);
+}
+
+function createButton(parentclassName, className, textContent, clickHandler) {
+  const button = document.createElement("button");
+  button.classList.add(parentclassName);
+  button.classList.add(className);
+  button.addEventListener("click", clickHandler);
+  button.innerHTML = textContent;
+  return button;
 }
 
 function removeButton() {
   const controlsButton = document.querySelector(".controls-button");
   if (controlsButton) {
     controlsButton.remove();
+  }
+}
+
+function ischangeVisibleGrid() {
+  isGridShowed = !isGridShowed;
+}
+
+function changeVisibleGrid() {
+  const gridDivs = document.querySelectorAll(".grid > div");
+  if (!isGridShowed) {
+    gridDivs.forEach((div) => {
+      div.classList.add("visible-grid");
+    });
+  } else {
+    gridDivs.forEach((div) => {
+      div.classList.remove("visible-grid");
+    });
   }
 }

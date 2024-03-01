@@ -78,34 +78,12 @@ const audio = new Howl({
 //MAIN
 init();
 
-
-function init() {
-  generatePlayField();
-  nextTetrominoGrid = document.querySelector(".next-tetromino-grid");
-  generateNextTetromino();
-  generateTetromino();
-  cells = document.querySelectorAll(".grid div");
-  draw();
-  document.addEventListener("keydown", onKeyDown);
-  startTimer();
-}
-
-
-
-
-
 const btnMenu = document.getElementById("btnMenu");
 btnMenu.textContent = "⚙";
 btnMenu.addEventListener("click", function () {
   showModalMenu();
   stopTimer();
 });
-
-showCustomModal(
-  "Note: The game pauses when you switch to another window. Your final result will be recorded in the leaderboard (top 5 attempts).",
-  "Ready to start?",
-  "Start"
-);
 
 document.addEventListener("touchstart", function (event) {
   touchStartX = event.touches[0].clientX;
@@ -118,35 +96,113 @@ document.addEventListener("touchend", function (event) {
   handleSwipe();
 });
 
-function handleSwipe() {
-  const threshold = 50;
-  const reloadSwipe = 500;
+//background animation
+document.addEventListener("DOMContentLoaded", function () {
+  const backgroundContainer = document.getElementById("background-container");
+  let intervalId;
 
-  const deltaX = touchEndX - touchStartX;
-  const deltaY = touchEndY - touchStartY;
+  function createFallingSquare() {
+    const square = document.createElement("div");
+    square.className = "falling-square";
 
-  if (Math.abs(deltaX) > threshold) {
-    if (deltaX > 0) {
-      moveTetaminaRight();
-    } else {
-      moveTetaminaLeft();
+    const size = Math.floor(Math.random() * 30) + 10;
+    square.style.width = `${size}px`;
+    square.style.height = `${size}px`;
+
+    const color = getRandomColor();
+    square.style.backgroundColor = color;
+
+    square.style.left = `${Math.random() * 100}vw`;
+    backgroundContainer.appendChild(square);
+
+    animateFallingSquare(square);
+  }
+
+  function animateFallingSquare(square) {
+    let positionY = 0;
+    const speed = 0.2;
+
+    function moveSquare() {
+      positionY += speed;
+      square.style.top = `${positionY}vh`;
+
+      if (positionY < 100) {
+        requestAnimationFrame(moveSquare);
+      } else {
+        square.remove();
+      }
     }
-    draw();
+
+    moveSquare();
   }
-  if (Math.abs(deltaY) > threshold) {
-    if (deltaY < 0) {
-      rotate();
-    } else {
-      moveTetaminaDown();
-    }
-    draw();
-  }
-  if (Math.abs(deltaY) > reloadSwipe) {
-    location.reload();
-  }
+
+  // Add an event handler for losing focus
+  window.addEventListener("blur", function () {
+    // stop all animation
+    audio.mute(true);
+    isMusic = false;
+    showCustomModal("Pause", " ", "Continue", "Restart");
+    clearInterval(intervalId);
+    stopTimer();
+  });
+
+  // when going to the game page
+  window.addEventListener("focus", function () {
+    // StartbacgroundAnimation
+    intervalId = setInterval(createFallingSquare, 60);
+    audio.mute(false);
+    isMusic = true;
+  });
+
+  //StartbacgroundAnimation
+  intervalId = setInterval(createFallingSquare, 60);
+});
+
+// Call the function on page load
+window.addEventListener("load", () => {
+  setInitialWindowSize();
+});
+
+window.addEventListener("resize", () => {
+  setInitialWindowSize();
+});
+
+function init() {
+  generatePlayField();
+  nextTetrominoGrid = document.querySelector(".next-tetromino-grid");
+  generateNextTetromino();
+  generateTetromino();
+  cells = document.querySelectorAll(".grid div");
+  draw();
+  document.addEventListener("keydown", onKeyDown);
+  startTimer();
+  showCustomModal(
+    "Note: The game pauses when you switch to another window. Your final result will be recorded in the leaderboard (top 5 attempts).",
+    "Ready to start?",
+    "Start"
+  );
 }
+
+
 ///////////////and main
 
+
+
+//random
+function tetraminoItem() {
+  const randomIndex = Math.floor(Math.random() * COPY_TETROMINO_NAMES.length);
+  const randomElement = COPY_TETROMINO_NAMES.splice(randomIndex, 1)[0];
+  if (COPY_TETROMINO_NAMES.length < 1) {
+    COPY_TETROMINO_NAMES = [...TETROMINO_NAMES];
+  }
+  return randomElement;
+}
+
+function convertPositionToIndex(row, column) {
+  return row * PLAY_FIELD_COLUMS + column;
+}
+
+///GENERATE FUNCTIONs
 //generate tetromino
 function generateNextTetromino() {
   const name = tetraminoItem();
@@ -172,31 +228,6 @@ function generateNextTetromino() {
   }
 }
 
-//random
-function tetraminoItem() {
-  const randomIndex = Math.floor(Math.random() * COPY_TETROMINO_NAMES.length);
-  const randomElement = COPY_TETROMINO_NAMES.splice(randomIndex, 1)[0];
-  if (COPY_TETROMINO_NAMES.length < 1) {
-    COPY_TETROMINO_NAMES = [...TETROMINO_NAMES];
-  }
-  return randomElement;
-}
-
-function convertPositionToIndex(row, column) {
-  return row * PLAY_FIELD_COLUMS + column;
-}
-
-///GENERATE FUNCTIONs
-function generatePlayField() {
-  for (let i = 0; i < PLAY_FIELD_ROWS * PLAY_FIELD_COLUMS; i++) {
-    const div = document.createElement("div");
-    document.querySelector(".grid").append(div);
-  }
-  playField = new Array(PLAY_FIELD_ROWS)
-    .fill()
-    .map(() => new Array(PLAY_FIELD_COLUMS).fill(0));
-}
-
 function generateTetromino() {
   const name =
     nextTetromino && nextTetromino.name ? nextTetromino.name : tetraminoItem();
@@ -214,6 +245,17 @@ function generateTetromino() {
 
   generateNextTetromino();
 }
+
+function generatePlayField() {
+  for (let i = 0; i < PLAY_FIELD_ROWS * PLAY_FIELD_COLUMS; i++) {
+    const div = document.createElement("div");
+    document.querySelector(".grid").append(div);
+  }
+  playField = new Array(PLAY_FIELD_ROWS)
+    .fill()
+    .map(() => new Array(PLAY_FIELD_COLUMS).fill(0));
+}
+
 ////place tetromino of playfield
 function placeTetromino() {
   const matrixSize = tetromino.matrix.length;
@@ -322,6 +364,36 @@ function onKeyDown(e) {
   draw();
 }
 
+//MOVE TOTROMINO BY SWIPE
+function handleSwipe() {
+  const threshold = 50;
+  const reloadSwipe = 500;
+
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = touchEndY - touchStartY;
+
+  if (Math.abs(deltaX) > threshold) {
+    if (deltaX > 0) {
+      moveTetaminaRight();
+    } else {
+      moveTetaminaLeft();
+    }
+    draw();
+  }
+  if (Math.abs(deltaY) > threshold) {
+    if (deltaY < 0) {
+      rotate();
+    } else {
+      moveTetaminaDown();
+    }
+    draw();
+  }
+  if (Math.abs(deltaY) > reloadSwipe) {
+    location.reload();
+  }
+}
+
+//MOVE TETRONIMO
 function moveTetaminaDown() {
   tetromino.row += 1;
   if (!isValid()) {
@@ -334,11 +406,6 @@ function moveTetaminaDown() {
   }
 
   draw();
-}
-function moweToEnd() {
-  while (!isTetrominoDown) {
-    moveTetaminaDown();
-  }
 }
 
 function moveTetaminaLeft() {
@@ -363,7 +430,7 @@ function isValid() {
       if (isOutSideOfGameBoard(row, column)) {
         return false;
       }
-      if (hasCollisions(row, column)) {
+      if (isHasCollisions(row, column)) {
         return false;
       }
     }
@@ -380,7 +447,7 @@ function isOutSideOfGameBoard(row, column) {
   );
 }
 
-function hasCollisions(row, column) {
+function isHasCollisions(row, column) {
   return (
     tetromino.matrix[row][column] &&
     playField[tetromino.row + row][tetromino.column + column]
@@ -409,8 +476,19 @@ function isRowCompleted(row) {
   return true;
 }
 
-//AUTOMOVE TO DOWN
+function ischangeVisibleGrid() {
+  isGridShowed = !isGridShowed;
+}
 
+
+//AUTOMOVE TO DOWN
+function moweToEnd() {
+  while (!isTetrominoDown) {
+    moveTetaminaDown();
+  }
+}
+
+//TIME FUNCTIONS
 function timerCallback(currentTime) {
   const MIN_SPEED = 50;
   if (!isTimerRunning || !isPaused) {
@@ -452,6 +530,8 @@ function stopTimer() {
   }
 }
 
+
+//UPDATE INFORMATION FOR DISPLAY
 function updateDisplay() {
   const minutes = Math.floor(elapsedTime / 60000);
   const seconds = Math.floor((elapsedTime % 60000) / 1000);
@@ -465,7 +545,8 @@ function updateDisplay() {
 }
 
 function getCurrLvl() {
-  level = Math.ceil((score + 1) / 500);
+  const scoreInOneLvl =500;
+  level = Math.ceil((score + 1) / scoreInOneLvl);
 
   return level;
 }
@@ -730,7 +811,7 @@ function showLiderBoard() {
   document.body.appendChild(liderList);
 }
 
-///RESET FUNCTION
+///RESET/RESTART FUNCTION
 function resetPlayField() {
   elapsedTime = 0;
   updateDisplay();
@@ -745,77 +826,7 @@ function resetPlayField() {
   showCustomModal("The game was restarted", "", "Ok");
 }
 
-//background animation
-document.addEventListener("DOMContentLoaded", function () {
-  const backgroundContainer = document.getElementById("background-container");
-  let intervalId;
-
-  function createFallingSquare() {
-    const square = document.createElement("div");
-    square.className = "falling-square";
-
-    const size = Math.floor(Math.random() * 30) + 10;
-    square.style.width = `${size}px`;
-    square.style.height = `${size}px`;
-
-    const color = getRandomColor();
-    square.style.backgroundColor = color;
-
-    square.style.left = `${Math.random() * 100}vw`;
-    backgroundContainer.appendChild(square);
-
-    animateFallingSquare(square);
-  }
-
-  function animateFallingSquare(square) {
-    let positionY = 0;
-    const speed = 0.2;
-
-    function moveSquare() {
-      positionY += speed;
-      square.style.top = `${positionY}vh`;
-
-      if (positionY < 100) {
-        requestAnimationFrame(moveSquare);
-      } else {
-        square.remove();
-      }
-    }
-
-    moveSquare();
-  }
-
-  // Add an event handler for losing focus
-  window.addEventListener("blur", function () {
-    // stop all animation
-    audio.mute(true);
-    isMusic = false;
-    showCustomModal("Pause", " ", "Continue", "Restart");
-    clearInterval(intervalId);
-    stopTimer();
-  });
-
-  // when going to the game page
-  window.addEventListener("focus", function () {
-    // StartbacgroundAnimation
-    intervalId = setInterval(createFallingSquare, 60);
-    audio.mute(false);
-    isMusic = true;
-  });
-
-  //StartbacgroundAnimation
-  intervalId = setInterval(createFallingSquare, 60);
-});
-
-// Call the function on page load
-window.addEventListener("load", () => {
-  setInitialWindowSize();
-});
-
-window.addEventListener("resize", () => {
-  setInitialWindowSize();
-});
-
+//HELPS FUNCTIONS
 function getRandomColor() {
   const letters = "0123456789ABCDEF";
   let color = "#";
@@ -914,10 +925,6 @@ function removeButton() {
   if (controlsButton) {
     controlsButton.remove();
   }
-}
-
-function ischangeVisibleGrid() {
-  isGridShowed = !isGridShowed;
 }
 
 function changeVisibleGrid() {

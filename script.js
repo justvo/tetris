@@ -93,7 +93,7 @@ btnMenu.addEventListener("click", function () {
 
 
 showCustomModal(
-  "Be careful, when switching to another window, the game stops",
+  "Note: The game pauses when you switch to another window. Your final result will be recorded in the leaderboard (top 5 attempts).",
   "Ready to start?",
   "Start"
 );
@@ -492,6 +492,7 @@ function showCustomModal(messageTitle, messageText, confirm, cancel) {
   isPaused = true;
   const isModalExists = document.querySelector(".modal");
   const isMenuExist = document.querySelector(".modal-menu");
+  const isLiderBoardExist = document.querySelector('#list-container-content')
 
   if (isModalExists) {
     return null;
@@ -525,11 +526,14 @@ function showCustomModal(messageTitle, messageText, confirm, cancel) {
         break;
       case 'Restart':
         resetPlayField();
+        
         break;
     }
 
     startTimer();
     isMenuExist ? isMenuExist.remove() : null;
+    isLiderBoardExist ? isLiderBoardExist.remove() : null;
+
     modal.style.display = "none";
     modal.remove();
   });
@@ -546,6 +550,7 @@ function showCustomModal(messageTitle, messageText, confirm, cancel) {
       }
       modal.style.display = "none";
       modal.remove();
+      isLiderBoardExist ? isLiderBoardExist.remove() : null;
     });
 
     buttons.appendChild(cancelButton);
@@ -599,8 +604,8 @@ function showModalMenu() {
       label: "Info",
       action: () =>
         showCustomModal(
-          "Control is with the ←, → and ↓ , turn by pressing the ↑ key/buttons, also use ⇓ for for a quick drop ",
-          "When using from the phone, swipes are available. \nTo reload the page, make a long swipe",
+          "Navigate using ←, →, and ↓ keys. Turn with ↑ key/buttons, and use ⇓/space for a quick drop.",
+          "On mobile, use swipes. Reload the page with a long swipe.",
           "Continue"
         ),
     },
@@ -609,8 +614,8 @@ function showModalMenu() {
       label: "Restart",
       action: () =>
         showCustomModal(
-          "Are you sure?",
-          "Really want to restart?",
+          "Are you sure? Really want to restart?",
+          "Restarting won't save the result in the leaderboard, so no step backward!",
           "No, contunue",
           "Restart"
         ),
@@ -711,6 +716,7 @@ function showLiderBoard() {
   closeButton.textContent = "Close";
   closeButton.onclick = () => {
     document.body.removeChild(liderList);
+    startTimer();
   };
 
   liderListContent.appendChild(list);
@@ -739,6 +745,7 @@ function resetPlayField() {
 document.addEventListener("DOMContentLoaded", function () {
   const backgroundContainer = document.getElementById("background-container");
   let intervalId;
+  
 
   function createFallingSquare() {
     const square = document.createElement("div");

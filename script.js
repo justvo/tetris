@@ -65,8 +65,9 @@ let elapsedTime = 0;
 
 let startVolume = 0.1;
 let isMusic = false;
+let nextTetrominoGrid;
+let cells;
 
-//MAIN
 const audio = new Howl({
   src: ["music/tetrisMusic.mp3"],
   loop: true,
@@ -74,15 +75,24 @@ const audio = new Howl({
   preload: "metadata",
 });
 
+//MAIN
+init();
 
-generatePlayField();
-const nextTetrominoGrid = document.querySelector(".next-tetromino-grid");
-generateNextTetromino();
-generateTetromino();
-const cells = document.querySelectorAll(".grid div");
-draw();
-document.addEventListener("keydown", onKeyDown);
-startTimer();
+
+function init() {
+  generatePlayField();
+  nextTetrominoGrid = document.querySelector(".next-tetromino-grid");
+  generateNextTetromino();
+  generateTetromino();
+  cells = document.querySelectorAll(".grid div");
+  draw();
+  document.addEventListener("keydown", onKeyDown);
+  startTimer();
+}
+
+
+
+
 
 const btnMenu = document.getElementById("btnMenu");
 btnMenu.textContent = "⚙";
@@ -90,7 +100,6 @@ btnMenu.addEventListener("click", function () {
   showModalMenu();
   stopTimer();
 });
-
 
 showCustomModal(
   "Note: The game pauses when you switch to another window. Your final result will be recorded in the leaderboard (top 5 attempts).",
@@ -413,7 +422,6 @@ function timerCallback(currentTime) {
 
   // If enough time has passed, move the tetramino down and increase the score
   if (deltaTime >= speedOfFallen()) {
-
     moveTetaminaDown();
     lastTime = currentTime;
     elapsedTime += deltaTime;
@@ -492,7 +500,7 @@ function showCustomModal(messageTitle, messageText, confirm, cancel) {
   isPaused = true;
   const isModalExists = document.querySelector(".modal");
   const isMenuExist = document.querySelector(".modal-menu");
-  const isLiderBoardExist = document.querySelector('#list-container-content')
+  const isLiderBoardExist = document.querySelector("#list-container-content");
 
   if (isModalExists) {
     return null;
@@ -520,13 +528,13 @@ function showCustomModal(messageTitle, messageText, confirm, cancel) {
   confirmButton.textContent = confirm;
   confirmButton.addEventListener("click", () => {
     switch (confirm) {
-      case 'Start':
+      case "Start":
         audio.play();
         isMusic = true;
         break;
-      case 'Restart':
+      case "Restart":
         resetPlayField();
-        
+
         break;
     }
 
@@ -632,7 +640,6 @@ function showModalMenu() {
         startTimer();
       },
     },
-
   ];
 
   buttonsData.forEach((buttonData) => {
@@ -647,42 +654,38 @@ function showModalMenu() {
     );
     buttons.appendChild(buttonElement);
   });
-  const musicControle = document.createElement('div');
+  const musicControle = document.createElement("div");
 
-  const musicButton = document.createElement('button');
-  musicButton.textContent = isMusic ? '🔈' : '🔇';
-  musicButton.classList.add('menu-button')
-  musicButton.classList.add('music-button')
-  musicButton.addEventListener('click', () => {
+  const musicButton = document.createElement("button");
+  musicButton.textContent = isMusic ? "🔈" : "🔇";
+  musicButton.classList.add("menu-button");
+  musicButton.classList.add("music-button");
+  musicButton.addEventListener("click", () => {
     if (!isMusic) {
-      audio.mute(true)
-      musicButton.textContent = '🔇'
+      audio.mute(true);
+      musicButton.textContent = "🔇";
     } else {
-      audio.mute(false)
-      musicButton.textContent = '🔈'
+      audio.mute(false);
+      musicButton.textContent = "🔈";
     }
     isMusic = !isMusic;
-  })
+  });
 
-  const volumeControl = document.createElement('input')
-  volumeControl.type = 'range'
+  const volumeControl = document.createElement("input");
+  volumeControl.type = "range";
 
   volumeControl.value = (audio.volume() * 100).toFixed(0);
 
-  volumeControl.addEventListener('input', changeVolume)
+  volumeControl.addEventListener("input", changeVolume);
 
-
-  musicControle.appendChild(musicButton)
-  musicControle.appendChild(volumeControl)
-  buttons.appendChild(musicControle)
-
+  musicControle.appendChild(musicButton);
+  musicControle.appendChild(volumeControl);
+  buttons.appendChild(musicControle);
 
   function changeVolume() {
-
     const volume = volumeControl.value / 100;
     audio.volume(volume);
   }
-
 
   modalContent.appendChild(buttons);
   modal.appendChild(modalContent);
@@ -700,19 +703,20 @@ function showLiderBoard() {
   liderList.id = "list-container-content";
 
   const list = document.createElement("ul");
-  list.textContent = 'Leader Board'
-
+  list.textContent = "Leader Board";
 
   for (let i = 0; i < 5; i++) {
     const listItem = document.createElement("li");
-    listItem.classList.add('list-item')
-    listItem.textContent = `${i + 1} - ${(leaderBoard[i] != null) ? leaderBoard[i] : 'Unknown'}`;
+    listItem.classList.add("list-item");
+    listItem.textContent = `${i + 1} - ${
+      leaderBoard[i] != null ? leaderBoard[i] : "Unknown"
+    }`;
     list.appendChild(listItem);
   }
 
   const closeButton = document.createElement("div");
   closeButton.id = "close-btn";
-  closeButton.classList.add('menu-button')
+  closeButton.classList.add("menu-button");
   closeButton.textContent = "Close";
   closeButton.onclick = () => {
     document.body.removeChild(liderList);
@@ -745,7 +749,6 @@ function resetPlayField() {
 document.addEventListener("DOMContentLoaded", function () {
   const backgroundContainer = document.getElementById("background-container");
   let intervalId;
-  
 
   function createFallingSquare() {
     const square = document.createElement("div");
@@ -800,10 +803,17 @@ document.addEventListener("DOMContentLoaded", function () {
     isMusic = true;
   });
 
-
-
   //StartbacgroundAnimation
   intervalId = setInterval(createFallingSquare, 60);
+});
+
+// Call the function on page load
+window.addEventListener("load", () => {
+  setInitialWindowSize();
+});
+
+window.addEventListener("resize", () => {
+  setInitialWindowSize();
 });
 
 function getRandomColor() {
@@ -825,15 +835,6 @@ function setInitialWindowSize() {
     removeButton();
   }
 }
-
-// Call the function on page load
-window.addEventListener("load", () => {
-  setInitialWindowSize();
-});
-
-window.addEventListener("resize", () => {
-  setInitialWindowSize();
-});
 
 function addButton() {
   const isButtonsExists = document.querySelector(".controls-button");

@@ -138,9 +138,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add an event handler for losing focus
   window.addEventListener("blur", function () {
+    if (initialWindowWidth < 600) {
+      return null;
+    }
+
     // stop all animation
-    audio.mute(true);
-    isMusic = false;
+    audio.pause()
+
     showCustomModal("Pause", " ", "Continue", "Restart");
     clearInterval(intervalId);
     stopTimer();
@@ -148,10 +152,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // when going to the game page
   window.addEventListener("focus", function () {
+    if (initialWindowWidth < 600) {
+      return null;
+    }
     // StartbacgroundAnimation
     intervalId = setInterval(createFallingSquare, 60);
-    audio.mute(false);
-    isMusic = true;
+    audio.play();
+  });
+
+  document.addEventListener("visibilitychange", function () {
+    if (initialWindowWidth > 600) {
+      return null;
+    }
+    if (document.visibilityState === "hidden") {
+
+      audio.pause()
+      showCustomModal("Pause", " ", "Continue", "Restart");
+      clearInterval(intervalId);
+      stopTimer();
+    } else {
+
+      audio.play();
+      intervalId = setInterval(createFallingSquare, 60);
+    }
   });
 
   //StartbacgroundAnimation
@@ -183,24 +206,7 @@ function init() {
   );
 }
 
-
 ///////////////and main
-
-
-
-//random
-function tetraminoItem() {
-  const randomIndex = Math.floor(Math.random() * COPY_TETROMINO_NAMES.length);
-  const randomElement = COPY_TETROMINO_NAMES.splice(randomIndex, 1)[0];
-  if (COPY_TETROMINO_NAMES.length < 1) {
-    COPY_TETROMINO_NAMES = [...TETROMINO_NAMES];
-  }
-  return randomElement;
-}
-
-function convertPositionToIndex(row, column) {
-  return row * PLAY_FIELD_COLUMS + column;
-}
 
 ///GENERATE FUNCTIONs
 //generate tetromino
@@ -480,7 +486,6 @@ function ischangeVisibleGrid() {
   isGridShowed = !isGridShowed;
 }
 
-
 //AUTOMOVE TO DOWN
 function moweToEnd() {
   while (!isTetrominoDown) {
@@ -530,7 +535,6 @@ function stopTimer() {
   }
 }
 
-
 //UPDATE INFORMATION FOR DISPLAY
 function updateDisplay() {
   const minutes = Math.floor(elapsedTime / 60000);
@@ -545,7 +549,7 @@ function updateDisplay() {
 }
 
 function getCurrLvl() {
-  const scoreInOneLvl =500;
+  const scoreInOneLvl = 500;
   level = Math.ceil((score + 1) / scoreInOneLvl);
 
   return level;
@@ -742,7 +746,7 @@ function showModalMenu() {
   musicButton.classList.add("menu-button");
   musicButton.classList.add("music-button");
   musicButton.addEventListener("click", () => {
-    if (!isMusic) {
+    if (isMusic) {
       audio.mute(true);
       musicButton.textContent = "🔇";
     } else {
@@ -834,6 +838,19 @@ function getRandomColor() {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
+}
+//get random item
+function tetraminoItem() {
+  const randomIndex = Math.floor(Math.random() * COPY_TETROMINO_NAMES.length);
+  const randomElement = COPY_TETROMINO_NAMES.splice(randomIndex, 1)[0];
+  if (COPY_TETROMINO_NAMES.length < 1) {
+    COPY_TETROMINO_NAMES = [...TETROMINO_NAMES];
+  }
+  return randomElement;
+}
+
+function convertPositionToIndex(row, column) {
+  return row * PLAY_FIELD_COLUMS + column;
 }
 
 function setInitialWindowSize() {

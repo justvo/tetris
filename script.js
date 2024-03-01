@@ -49,7 +49,7 @@ let COPY_TETROMINO_NAMES = ["O", "J", "T", "I", "S", "Z", "L"];
 let scoreValueElement = document.querySelector(".score-value");
 let score = 0;
 let level = 1;
-let isGridShowed = false;
+let isGridShowed = true;
 let isTimerRunning;
 let lastTime = 0;
 
@@ -200,7 +200,7 @@ function init() {
   document.addEventListener("keydown", onKeyDown);
   startTimer();
   showCustomModal(
-    "Note: The game pauses when you switch to another window. Your final result will be recorded in the leaderboard (top 5 attempts).",
+    "Note: The game pauses when you switch to another window. Your final result will be recorded in the leaderboard (top 5 attempts). After a short delay, the music will begin. If it's distracting, you can always mute it",
     "Ready to start?",
     "Start"
   );

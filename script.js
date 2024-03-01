@@ -332,6 +332,9 @@ function rotateTetromino() {
 }
 
 function rotate() {
+  if(isPaused){
+    return null
+  }
   rotateTetromino();
   draw();
 }
@@ -401,6 +404,9 @@ function handleSwipe() {
 
 //MOVE TETRONIMO
 function moveTetaminaDown() {
+  if(isPaused){
+    return null
+  }
   tetromino.row += 1;
   if (!isValid()) {
     checkGameOver();
@@ -415,6 +421,9 @@ function moveTetaminaDown() {
 }
 
 function moveTetaminaLeft() {
+  if(isPaused){
+    return null
+  }
   tetromino.column -= 1;
   if (!isValid()) {
     tetromino.column += 1;
@@ -422,6 +431,9 @@ function moveTetaminaLeft() {
 }
 
 function moveTetaminaRight() {
+  if(isPaused){
+    return null
+  }
   tetromino.column += 1;
   if (!isValid()) {
     tetromino.column -= 1;
@@ -496,7 +508,7 @@ function moweToEnd() {
 //TIME FUNCTIONS
 function timerCallback(currentTime) {
   const MIN_SPEED = 50;
-  if (!isTimerRunning || !isPaused) {
+  if (!isTimerRunning ) {
     return;
   }
 
@@ -522,6 +534,7 @@ function timerCallback(currentTime) {
 
 function startTimer() {
   if (!isTimerRunning) {
+    isPaused = false;
     isTimerRunning = true;
     lastTime = performance.now();
     timerMove = requestAnimationFrame(timerCallback);
@@ -530,6 +543,7 @@ function startTimer() {
 
 function stopTimer() {
   if (isTimerRunning) {
+    isPaused = true;
     cancelAnimationFrame(timerMove);
     isTimerRunning = false;
   }
@@ -582,7 +596,6 @@ function removeCompletedRows() {
 //MODAL-MESSAGE
 function showCustomModal(messageTitle, messageText, confirm, cancel) {
   stopTimer();
-  isPaused = true;
   const isModalExists = document.querySelector(".modal");
   const isMenuExist = document.querySelector(".modal-menu");
   const isLiderBoardExist = document.querySelector("#list-container-content");
